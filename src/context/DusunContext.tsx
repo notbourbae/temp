@@ -10,7 +10,8 @@ import {
   PejabatDusun,
   PotensiSDA,
   StatistikProduksi,
-  BudayaItem
+  BudayaItem,
+  OrganisasiItem
 } from '../types';
 import {
   syncAllFromSupabase,
@@ -38,6 +39,9 @@ import {
   createBudaya,
   updateBudaya as updateBudayaSupabase,
   deleteBudaya as deleteBudayaSupabase,
+  createOrganisasi,
+  updateOrganisasi as updateOrganisasiSupabase,
+  deleteOrganisasi as deleteOrganisasiSupabase,
   isSupabaseConfigured,
   supabase
 } from '../lib/supabase';
@@ -143,6 +147,11 @@ interface DusunContextType {
   updateBudaya: (id: string, data: Partial<BudayaItem>) => void;
   deleteBudaya: (id: string) => void;
 
+  organisasiList: OrganisasiItem[];
+  addOrganisasi: (organisasi: Omit<OrganisasiItem, 'id'>) => void;
+  updateOrganisasi: (id: string, data: Partial<OrganisasiItem>) => void;
+  deleteOrganisasi: (id: string) => void;
+
   wisataEvents: WisataEvent[];
   addWisataEvent: (event: Omit<WisataEvent, 'id'>) => void;
   updateWisataEvent: (id: string, data: Partial<WisataEvent>) => void;
@@ -205,6 +214,8 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [budayaList, setBudayaList] = useState<BudayaItem[]>([]);
 
+  const [organisasiList, setOrganisasiList] = useState<OrganisasiItem[]>([]);
+
   const [potensiSDA, setPotensiSDA] = useState<PotensiSDA[]>([]);
 
   const [statistikProduksi, setStatistikProduksi] = useState<StatistikProduksi[]>([]);
@@ -235,6 +246,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setBudayaList(data.budayaList);
     setPotensiSDA(data.potensiSDA);
     setStatistikProduksi(data.statistikProduksi);
+    setOrganisasiList(data.organisasiList ?? []);
   }, []);
 
   // ─── Initial load from Supabase ───────────────────
@@ -544,6 +556,43 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  const addOrganisasi = (data: Omit<OrganisasiItem, 'id'>) => {
+    const newItem: OrganisasiItem = {
+      ...data,
+      id: 'org_' + Date.now()
+    };
+    setOrganisasiList(prev => [newItem, ...prev]);
+    invalidateDusunCache();
+    if (isSupabaseConfigured && supabase) {
+      createOrganisasi(newItem).catch(err => {
+        console.error('Gagal simpan organisasi ke Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data organisasi tersimpan lokal, tapi gagal sync ke Supabase. Pastikan tabel "organisasi" sudah dibuat di database.' });
+      });
+    }
+  };
+
+  const updateOrganisasi = (id: string, data: Partial<OrganisasiItem>) => {
+    invalidateDusunCache();
+    setOrganisasiList(prev => prev.map(o => o.id === id ? { ...o, ...data } : o));
+    if (isSupabaseConfigured && supabase) {
+      updateOrganisasiSupabase(id, data).catch(err => {
+        console.error('Gagal update organisasi ke Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data organisasi terupdate lokal, tapi gagal sync ke Supabase.' });
+      });
+    }
+  };
+
+  const deleteOrganisasi = (id: string) => {
+    invalidateDusunCache();
+    setOrganisasiList(prev => prev.filter(o => o.id !== id));
+    if (isSupabaseConfigured && supabase) {
+      deleteOrganisasiSupabase(id).catch(err => {
+        console.error('Gagal hapus organisasi dari Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data organisasi terhapus lokal, tapi gagal sync ke Supabase.' });
+      });
+    }
+  };
+
   const addPotensiSDA = (sda: Omit<PotensiSDA, 'id'>) => {
     const newItem: PotensiSDA = {
       ...sda,
@@ -619,6 +668,10 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addBudaya,
         updateBudaya,
         deleteBudaya,
+        organisasiList,
+        addOrganisasi,
+        updateOrganisasi,
+        deleteOrganisasi,
         potensiSDA,
         addPotensiSDA,
         updatePotensiSDA,

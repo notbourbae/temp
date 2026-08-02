@@ -12,7 +12,8 @@ import {
   Quote,
   Building2,
   Calendar,
-  Landmark
+  Landmark,
+  MapPin
 } from 'lucide-react';
 
 export const Home: React.FC = () => {
@@ -21,6 +22,7 @@ export const Home: React.FC = () => {
     beritaList,
     umkmList,
     wisataList,
+    wisataEvents,
     budayaList,
     setActiveTab,
     setActiveInfoSubTab,
@@ -359,6 +361,37 @@ export const Home: React.FC = () => {
                   <span className="text-slate-400 font-medium">Buka: {w.jamOperasional.split('(')[0]}</span>
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* KALENDER KEGIATAN WISATA & FESTIVAL */}
+      <section className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl border border-slate-800">
+        <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+          <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white shrink-0">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">Kalender Kegiatan & Festival Wisata Dusun</h3>
+            <p className="text-xs text-teal-300">Agenda Kebudayaan, Panen Raya, dan Olahraga Tahun 2026</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {wisataEvents.map((ev) => (
+            <div key={ev.id} className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2">
+              <span className="inline-block bg-teal-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
+                {ev.kategori}
+              </span>
+              <h4 className="font-bold text-white text-sm">{ev.judul}</h4>
+              <p className="text-xs text-slate-300 flex items-center gap-1.5 pt-1">
+                <Calendar className="w-3.5 h-3.5 text-teal-400" /> {ev.tanggal}
+              </p>
+              <p className="text-xs text-slate-300 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-teal-400" /> {ev.lokasi}
+              </p>
+              <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-700">{ev.deskripsi}</p>
             </div>
           ))}
         </div>

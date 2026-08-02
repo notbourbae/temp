@@ -133,6 +133,20 @@ CREATE TABLE IF NOT EXISTS statistik_produksi (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 9. Tabel Organisasi / Lembaga Dusun
+CREATE TABLE IF NOT EXISTS organisasi (
+  id TEXT PRIMARY KEY,
+  nama TEXT NOT NULL,
+  kategori TEXT DEFAULT '',
+  jumlah_anggota TEXT DEFAULT '',
+  deskripsi TEXT DEFAULT '',
+  ketua TEXT DEFAULT '',
+  kontak TEXT DEFAULT '',
+  lokasi_atau_kantor TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ─────────────────────────────────────────────
 -- MIGRASI TABEL LAMA
 -- Jalankan jika tabel sudah pernah dibuat sebelumnya
@@ -170,3 +184,4 @@ ALTER TABLE wisata DISABLE ROW LEVEL SECURITY;
 ALTER TABLE wisata_events DISABLE ROW LEVEL SECURITY;
 ALTER TABLE potensi_sda DISABLE ROW LEVEL SECURITY;
 ALTER TABLE statistik_produksi DISABLE ROW LEVEL SECURITY;
+ALTER TABLE organisasi DISABLE ROW LEVEL SECURITY;

@@ -30,7 +30,7 @@ import {
   Quote,
   Landmark
 } from 'lucide-react';
-import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem } from '../../types';
+import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem } from '../../types';
 import { ImageUploader } from '../ImageUploader';
 
 export const Admin: React.FC = () => {
@@ -71,13 +71,73 @@ export const Admin: React.FC = () => {
     addBudaya,
     updateBudaya,
     deleteBudaya,
+    organisasiList,
+    addOrganisasi,
+    updateOrganisasi,
+    deleteOrganisasi,
     adminNotification,
     setAdminNotification
   } = useDusun();
 
   const [passcode, setPasscode] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'informasi' | 'struktur' | 'berita' | 'umkm' | 'wisata' | 'sda' | 'agenda' | 'budaya' | 'pengguna'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'informasi' | 'struktur' | 'berita' | 'umkm' | 'wisata' | 'sda' | 'agenda' | 'budaya' | 'organisasi' | 'pengguna'>('dashboard');
+
+  // Organisasi Form State
+  const [newOrgName, setNewOrgName] = useState('');
+  const [newOrgCat, setNewOrgCat] = useState('Kepemudaan');
+  const [newOrgAnggota, setNewOrgAnggota] = useState('');
+  const [newOrgDesc, setNewOrgDesc] = useState('');
+  const [newOrgKetua, setNewOrgKetua] = useState('');
+  const [newOrgKontak, setNewOrgKontak] = useState('');
+  const [newOrgLokasi, setNewOrgLokasi] = useState('Balai Dusun');
+
+  const [editingOrgId, setEditingOrgId] = useState<string | null>(null);
+  const [editOrgForm, setEditOrgForm] = useState<OrganisasiItem | null>(null);
+
+  const handleCreateOrganisasi = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newOrgName || !newOrgDesc) return;
+
+    addOrganisasi({
+      nama: newOrgName,
+      kategori: newOrgCat,
+      jumlahAnggota: newOrgAnggota || 'Aktif',
+      deskripsi: newOrgDesc,
+      ketua: newOrgKetua,
+      kontak: newOrgKontak,
+      lokasiAtauKantor: newOrgLokasi
+    });
+
+    setNewOrgName('');
+    setNewOrgAnggota('');
+    setNewOrgDesc('');
+    setNewOrgKetua('');
+    setNewOrgKontak('');
+    setNewOrgLokasi('Balai Dusun');
+    alert('Organisasi / Lembaga baru berhasil ditambahkan!');
+  };
+
+  const startEditOrganisasi = (item: OrganisasiItem) => {
+    setEditingOrgId(item.id);
+    setEditOrgForm({ ...item });
+  };
+
+  const handleSaveEditOrganisasi = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOrgId || !editOrgForm) return;
+
+    updateOrganisasi(editingOrgId, editOrgForm);
+    setEditingOrgId(null);
+    setEditOrgForm(null);
+    alert('Data organisasi berhasil diperbarui!');
+  };
+
+  const handleDeleteOrganisasi = (id: string, nama: string) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus organisasi "${nama}"?`)) {
+      deleteOrganisasi(id);
+    }
+  };
 
   // Budaya Form State
   const [newBudayaName, setNewBudayaName] = useState('');
@@ -568,19 +628,28 @@ export const Admin: React.FC = () => {
           <Landmark className="w-4 h-4" />
           Kelola Budaya ({budayaList.length})
         </button>
+
+        <button
+          onClick={() => setAdminTab('organisasi')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'organisasi' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+            }`}
+        >
+          <Users className="w-4 h-4" />
+          Kelola Organisasi ({organisasiList.length})
+        </button>
       </div>
 
       {/* ADMIN TAB 1: DASHBOARD STATS OVERVIEW */}
       {adminTab === 'dashboard' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
               <p className="text-xs text-slate-500 font-medium">Total Berita / Pengumuman</p>
               <p className="text-3xl font-black text-slate-900">{beritaList.length}</p>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Pendaftaran UMKM Menunggu Verifikasi</p>
+              <p className="text-xs text-slate-500 font-medium">Pendaftaran UMKM Menunggu</p>
               <p className="text-3xl font-black text-amber-600">{pendingUmkm.length}</p>
             </div>
 
@@ -592,6 +661,11 @@ export const Admin: React.FC = () => {
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
               <p className="text-xs text-slate-500 font-medium">Destinasi Wisata Terdata</p>
               <p className="text-3xl font-black text-blue-600">{wisataList.length}</p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
+              <p className="text-xs text-slate-500 font-medium">Lembaga & Organisasi</p>
+              <p className="text-3xl font-black text-teal-600">{organisasiList.length}</p>
             </div>
           </div>
 
@@ -2407,6 +2481,349 @@ export const Admin: React.FC = () => {
                   <p className="text-[10px] text-amber-400 font-medium flex items-center gap-1 pt-1">
                     <MapPin className="w-3 h-3 text-amber-400" /> {item.lokasi}
                   </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ADMIN TAB: KELOLA ORGANISASI & LEMBAGA DUSUN */}
+      {adminTab === 'organisasi' && (
+        <div className="space-y-8 animate-in fade-in duration-200 text-xs">
+
+          {/* Form Tambah Organisasi */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+                <Plus className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">Tambah Lembaga / Organisasi Baru</h3>
+                <p className="text-xs text-slate-500">Daftarkan wadah kemasyarakatan, kelompok tani, kepemudaan, atau keagamaan dusun.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateOrganisasi} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Nama Organisasi / Lembaga <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={newOrgName}
+                    onChange={(e) => setNewOrgName(e.target.value)}
+                    placeholder="misal: Karang Taruna Tunas Karya"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Kategori Lembaga</label>
+                  <select
+                    value={newOrgCat}
+                    onChange={(e) => setNewOrgCat(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium bg-white"
+                  >
+                    <option value="Kepemudaan">Kepemudaan</option>
+                    <option value="Pemberdayaan Wanita">Pemberdayaan Wanita (PKK/KWT)</option>
+                    <option value="Pertanian">Pertanian / Kelompok Tani</option>
+                    <option value="Kesehatan">Kesehatan (Posyandu/Kader)</option>
+                    <option value="Kemasyarakatan">Kemasyarakatan (LKD/RT/RW)</option>
+                    <option value="Keagamaan">Keagamaan (Takmir/Remas)</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Jumlah Anggota / Pengurus</label>
+                  <input
+                    type="text"
+                    value={newOrgAnggota}
+                    onChange={(e) => setNewOrgAnggota(e.target.value)}
+                    placeholder="misal: 45 Pemuda / 12 Kader"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Ketua / Penanggung Jawab</label>
+                  <input
+                    type="text"
+                    value={newOrgKetua}
+                    onChange={(e) => setNewOrgKetua(e.target.value)}
+                    placeholder="misal: Ahmad Rifa'i"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Nomor HP / WhatsApp Kontak</label>
+                  <input
+                    type="text"
+                    value={newOrgKontak}
+                    onChange={(e) => setNewOrgKontak(e.target.value)}
+                    placeholder="misal: 6281234567890"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">Alamat / Sekretariat / Kantor</label>
+                  <input
+                    type="text"
+                    value={newOrgLokasi}
+                    onChange={(e) => setNewOrgLokasi(e.target.value)}
+                    placeholder="misal: Balai Dusun Tosari RT 01"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700">Deskripsi & Peran Organisasi <span className="text-red-500">*</span></label>
+                <textarea
+                  required
+                  rows={3}
+                  value={newOrgDesc}
+                  onChange={(e) => setNewOrgDesc(e.target.value)}
+                  placeholder="Jelaskan tujuan, program kerja rutin, dan manfaat keberadaan organisasi ini bagi warga..."
+                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
+                />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  className="bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                >
+                  <Save className="w-4 h-4" /> Simpan Organisasi
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Modal Edit Organisasi */}
+          {editingOrgId && editOrgForm && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+              <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                      <Edit3 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900">Edit Data Organisasi</h3>
+                      <p className="text-xs text-slate-500">Perbarui informasi lembaga atau organisasi dusun.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setEditingOrgId(null); setEditOrgForm(null); }}
+                    className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer text-slate-400 hover:text-slate-700"
+                  >
+                    <XCircle className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveEditOrganisasi} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Nama Organisasi</label>
+                      <input
+                        type="text"
+                        required
+                        value={editOrgForm.nama}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, nama: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Kategori</label>
+                      <select
+                        value={editOrgForm.kategori}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, kategori: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium bg-white"
+                      >
+                        <option value="Kepemudaan">Kepemudaan</option>
+                        <option value="Pemberdayaan Wanita">Pemberdayaan Wanita (PKK/KWT)</option>
+                        <option value="Pertanian">Pertanian / Kelompok Tani</option>
+                        <option value="Kesehatan">Kesehatan (Posyandu/Kader)</option>
+                        <option value="Kemasyarakatan">Kemasyarakatan (LKD/RT/RW)</option>
+                        <option value="Keagamaan">Keagamaan (Takmir/Remas)</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Jumlah Anggota</label>
+                      <input
+                        type="text"
+                        value={editOrgForm.jumlahAnggota}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, jumlahAnggota: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Ketua / Penanggung Jawab</label>
+                      <input
+                        type="text"
+                        value={editOrgForm.ketua}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, ketua: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Kontak WA</label>
+                      <input
+                        type="text"
+                        value={editOrgForm.kontak}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, kontak: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700">Alamat / Sekretariat</label>
+                      <input
+                        type="text"
+                        value={editOrgForm.lokasiAtauKantor || ''}
+                        onChange={(e) => setEditOrgForm({ ...editOrgForm, lokasiAtauKantor: e.target.value })}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700">Deskripsi Organisasi</label>
+                    <textarea
+                      rows={3}
+                      value={editOrgForm.deskripsi}
+                      onChange={(e) => setEditOrgForm({ ...editOrgForm, deskripsi: e.target.value })}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => { setEditingOrgId(null); setEditOrgForm(null); }}
+                      className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 font-bold transition-colors cursor-pointer text-slate-600"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                      <Save className="w-4 h-4" /> Simpan Perubahan
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Daftar Organisasi */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900">Daftar Lembaga & Organisasi Dusun ({organisasiList.length})</h3>
+                <p className="text-xs text-slate-500">Kelola informasi organisasi yang tampil pada halaman publik.</p>
+              </div>
+            </div>
+
+            {organisasiList.length === 0 ? (
+              <div className="text-center py-10 bg-slate-50 rounded-2xl text-slate-500">
+                Belum ada data organisasi.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {organisasiList.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-3 flex flex-col justify-between hover:border-teal-300 transition-all"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
+                          {item.kategori}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-medium">{item.jumlahAnggota}</span>
+                      </div>
+                      <h4 className="font-extrabold text-slate-900 text-sm">{item.nama}</h4>
+                      <p className="text-[11px] text-slate-600 line-clamp-3 leading-relaxed">{item.deskripsi}</p>
+                    </div>
+
+                    <div className="space-y-2 pt-3 border-t border-slate-200">
+                      {item.ketua && (
+                        <p className="text-[11px] text-slate-600">
+                          <span className="text-slate-400">Ketua:</span> <strong className="text-slate-800">{item.ketua}</strong>
+                        </p>
+                      )}
+                      {item.lokasiAtauKantor && (
+                        <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-teal-600 shrink-0" /> {item.lokasiAtauKantor}
+                        </p>
+                      )}
+
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                        <button
+                          onClick={() => startEditOrganisasi(item)}
+                          className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteOrganisasi(item.id, item.nama)}
+                          className="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Hapus
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Live Preview Organisasi */}
+          <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 border border-slate-800 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">Live Preview: Halaman Lembaga & Organisasi</h3>
+                  <p className="text-xs text-teal-300">Tampilan Publik Pada Tab Informasi Dusun</p>
+                </div>
+              </div>
+              <span className="text-[11px] bg-teal-950 text-teal-300 px-3 py-1 rounded-full font-semibold">
+                Pratinjau Publik
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {organisasiList.map((item) => (
+                <div key={item.id} className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-block bg-teal-600 text-white font-bold text-[10px] px-2 py-0.5 rounded-md">
+                      {item.kategori}
+                    </span>
+                    <span className="text-[10px] text-slate-400">{item.jumlahAnggota}</span>
+                  </div>
+                  <h4 className="font-bold text-white text-sm">{item.nama}</h4>
+                  <p className="text-[11px] text-slate-300 line-clamp-2">{item.deskripsi}</p>
+                  {item.ketua && (
+                    <p className="text-[10px] text-teal-400 font-medium pt-1">
+                      Ketua: {item.ketua}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

@@ -29,7 +29,8 @@ export const InformasiDusun: React.FC = () => {
     setDusunInfo,
     pejabatList,
     beritaList,
-    setSelectedBeritaModal
+    setSelectedBeritaModal,
+    organisasiList
   } = useDusun();
 
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -39,22 +40,21 @@ export const InformasiDusun: React.FC = () => {
 
   const filteredBerita = beritaList.filter(b => {
     return b.judul.toLowerCase().includes(beritaSearch.toLowerCase()) ||
-           b.ringkasan.toLowerCase().includes(beritaSearch.toLowerCase()) ||
-           b.kategori.toLowerCase().includes(beritaSearch.toLowerCase());
+      b.ringkasan.toLowerCase().includes(beritaSearch.toLowerCase()) ||
+      b.kategori.toLowerCase().includes(beritaSearch.toLowerCase());
   });
 
   return (
     <div id="page-informasi-dusun" className="space-y-8 animate-in fade-in duration-300">
-      
+
       {/* Subtab Header Navigation Pills */}
       <div className="bg-white p-2 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveInfoSubTab('profil')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
-            activeInfoSubTab === 'profil'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'profil'
               ? 'bg-emerald-700 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <MapPin className="w-4 h-4" />
           Profil Dusun
@@ -62,11 +62,10 @@ export const InformasiDusun: React.FC = () => {
 
         <button
           onClick={() => setActiveInfoSubTab('sejarah')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
-            activeInfoSubTab === 'sejarah'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'sejarah'
               ? 'bg-emerald-700 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <History className="w-4 h-4" />
           Sejarah Dusun
@@ -74,11 +73,10 @@ export const InformasiDusun: React.FC = () => {
 
         <button
           onClick={() => setActiveInfoSubTab('visi-misi')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
-            activeInfoSubTab === 'visi-misi'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'visi-misi'
               ? 'bg-emerald-700 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Target className="w-4 h-4" />
           Visi dan Misi
@@ -86,23 +84,32 @@ export const InformasiDusun: React.FC = () => {
 
         <button
           onClick={() => setActiveInfoSubTab('struktur')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
-            activeInfoSubTab === 'struktur'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'struktur'
               ? 'bg-emerald-700 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Building className="w-4 h-4" />
           Struktur Pemerintahan
         </button>
 
         <button
-          onClick={() => setActiveInfoSubTab('berita')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
-            activeInfoSubTab === 'berita'
+          onClick={() => setActiveInfoSubTab('organisasi')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'organisasi'
               ? 'bg-emerald-700 text-white shadow-xs'
               : 'text-slate-600 hover:bg-slate-100'
-          }`}
+            }`}
+        >
+          <Users className="w-4 h-4" />
+          Organisasi
+        </button>
+
+        <button
+          onClick={() => setActiveInfoSubTab('berita')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'berita'
+              ? 'bg-emerald-700 text-white shadow-xs'
+              : 'text-slate-600 hover:bg-slate-100'
+            }`}
         >
           <Newspaper className="w-4 h-4" />
           Berita & Pengumuman
@@ -333,10 +340,75 @@ export const InformasiDusun: React.FC = () => {
         </div>
       )}
 
+      {/* SUBTAB: ORGANISASI DUSUN */}
+      {activeInfoSubTab === 'organisasi' && (
+        <div className="space-y-8 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Lembaga & Organisasi Kemasyarakatan Dusun</h2>
+                <p className="text-xs text-slate-500">Wadah Aktivitas Kepemudaan, Pemberdayaan Perempuan, Tani, dan Kemitraan Warga {dusunInfo.namaDusun}</p>
+              </div>
+            </div>
+
+            {organisasiList.length === 0 ? (
+              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200">
+                <p className="text-slate-500 text-xs">Belum ada data organisasi. Data akan tampil di sini setelah admin menambahkan organisasi/lembaga dusun.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {organisasiList.map((item) => (
+                  <div key={item.id} className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-3.5 hover:border-emerald-300 transition-all flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
+                          {item.kategori}
+                        </span>
+                        {item.jumlahAnggota && (
+                          <span className="text-[11px] text-slate-500 font-medium">{item.jumlahAnggota}</span>
+                        )}
+                      </div>
+                      <h3 className="font-extrabold text-slate-900 text-base">{item.nama}</h3>
+                      <p className="text-xs text-slate-600 leading-relaxed">{item.deskripsi}</p>
+                    </div>
+                    <div className="space-y-2 pt-3 border-t border-slate-200">
+                      {item.ketua && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-500">Ketua Organisasi:</span>
+                          <span className="font-bold text-slate-800">{item.ketua}</span>
+                        </div>
+                      )}
+                      {item.lokasiAtauKantor && (
+                        <div className="text-[11px] text-slate-600 font-medium bg-white p-2 rounded-lg border border-slate-200 text-center">
+                          {item.lokasiAtauKantor}
+                        </div>
+                      )}
+                      {item.kontak && (
+                        <a
+                          href={`https://wa.me/${item.kontak.replace(/[^0-9]/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 text-xs text-emerald-800 font-bold bg-emerald-100 hover:bg-emerald-200 px-3 py-2 rounded-xl transition-colors w-full"
+                        >
+                          <Phone className="w-3.5 h-3.5" /> Hubungi Pengurus
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* SUBTAB 5: BERITA DAN PENGUMUMAN */}
       {activeInfoSubTab === 'berita' && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          
+
           {/* Search Header */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
             {/* Search Input */}
@@ -369,10 +441,9 @@ export const InformasiDusun: React.FC = () => {
                     decoding="async"
                     className="w-full h-full object-cover"
                   />
-                  <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                    item.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950' :
-                    item.kategori === 'Agenda' ? 'bg-blue-600 text-white' : 'bg-emerald-700 text-white'
-                  }`}>
+                  <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-md ${item.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950' :
+                      item.kategori === 'Agenda' ? 'bg-blue-600 text-white' : 'bg-emerald-700 text-white'
+                    }`}>
                     {item.kategori}
                   </span>
                 </div>

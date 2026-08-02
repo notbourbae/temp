@@ -9,7 +9,8 @@ import {
   PejabatDusun,
   PotensiSDA,
   StatistikProduksi,
-  BudayaItem
+  BudayaItem,
+  OrganisasiItem
 } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -58,6 +59,7 @@ export interface AllDusunData {
   budayaList: BudayaItem[];
   potensiSDA: PotensiSDA[];
   statistikProduksi: StatistikProduksi[];
+  organisasiList: OrganisasiItem[];
 }
 
 // ──────────────────────────────────────────────────
@@ -194,6 +196,19 @@ function mapBudaya(data: any): BudayaItem {
   };
 }
 
+function mapOrganisasi(data: any): OrganisasiItem {
+  return {
+    id: data.id,
+    nama: data.nama,
+    kategori: data.kategori || '',
+    jumlahAnggota: data.jumlah_anggota || '',
+    deskripsi: data.deskripsi || '',
+    ketua: data.ketua || '',
+    kontak: data.kontak || '',
+    lokasiAtauKantor: data.lokasi_atau_kantor || ''
+  };
+}
+
 function mapStatistikProduksi(data: any): StatistikProduksi {
   return {
     tahun: data.tahun || '',
@@ -234,6 +249,16 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
       supabase.from('statistik_produksi').select('*').order('tahun', { ascending: false })
     ]);
 
+    // Query organisasi dipisah agar kegagalan (mis. tabel belum dibuat)
+    // tidak membatalkan seluruh sync data lainnya.
+    let organisasiRes: any[] | null = null;
+    try {
+      const res = await supabase.from('organisasi').select('*');
+      organisasiRes = res.data;
+    } catch (err) {
+      console.warn('Gagal sync organisasi (tabel mungkin belum dibuat):', err);
+    }
+
     const hasData = dusunInfoRes || (pejabatRes && pejabatRes.length > 0);
     if (!hasData) return null;
 
@@ -246,7 +271,8 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
       wisataEvents: (wisataEventsRes || []).map(mapWisataEvent),
       budayaList: (budayaRes || []).map(mapBudaya),
       potensiSDA: (potensiSDARes || []).map(mapPotensiSDA),
-      statistikProduksi: (statistikRes || []).map(mapStatistikProduksi)
+      statistikProduksi: (statistikRes || []).map(mapStatistikProduksi),
+      organisasiList: (organisasiRes || []).map(mapOrganisasi)
     };
   } catch (err) {
     console.error('Error syncing from Supabase:', err);
@@ -621,4 +647,40 @@ export async function updateBudaya(id: string, data: Partial<BudayaItem>) {
 export async function deleteBudaya(id: string) {
   if (!supabase) return;
   await supabase.from('budaya').delete().eq('id', id);
+}
+
+// ──────────────────────────────────────────────────
+// ORGANISASI
+// ──────────────────────────────────────────────────
+
+export async function createOrganisasi(data: OrganisasiItem) {
+  if (!supabase) return;
+  await supabase.from('organisasi').insert({
+    id: data.id,
+    nama: data.nama,
+    kategori: data.kategori,
+    jumlah_anggota: data.jumlahAnggota,
+    deskripsi: data.deskripsi,
+    ketua: data.ketua,
+    kontak: data.kontak,
+    lokasi_atau_kantor: data.lokasiAtauKantor
+  });
+}
+
+export async function updateOrganisasi(id: string, data: Partial<OrganisasiItem>) {
+  if (!supabase) return;
+  const payload: Record<string, unknown> = {};
+  if (data.nama !== undefined) payload.nama = data.nama;
+  if (data.kategori !== undefined) payload.kategori = data.kategori;
+  if (data.jumlahAnggota !== undefined) payload.jumlah_anggota = data.jumlahAnggota;
+  if (data.deskripsi !== undefined) payload.deskripsi = data.deskripsi;
+  if (data.ketua !== undefined) payload.ketua = data.ketua;
+  if (data.kontak !== undefined) payload.kontak = data.kontak;
+  if (data.lokasiAtauKantor !== undefined) payload.lokasi_atau_kantor = data.lokasiAtauKantor;
+  await supabase.from('organisasi').update(payload).eq('id', id);
+}
+
+export async function deleteOrganisasi(id: string) {
+  if (!supabase) return;
+  await supabase.from('organisasi').delete().eq('id', id);
 }

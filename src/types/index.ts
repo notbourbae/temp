@@ -105,6 +105,17 @@ export interface StatistikProduksi {
   peternakanEkor: number;
 }
 
+export interface OrganisasiItem {
+  id: string;
+  nama: string;
+  kategori: string;
+  jumlahAnggota: string;
+  deskripsi: string;
+  ketua: string;
+  kontak: string;
+  lokasiAtauKantor: string;
+}
+
 export interface DusunInfo {
   namaDusun: string;
   desa: string;
