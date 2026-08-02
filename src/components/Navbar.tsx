@@ -91,11 +91,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-beranda"
                 onClick={() => handleNavClick('beranda')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'beranda'
-                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'beranda'
+                  ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <Home className="w-4 h-4" />
                 Beranda
@@ -112,11 +111,10 @@ export const Navbar: React.FC = () => {
                 <button
                   id="nav-tab-informasi"
                   onClick={() => handleNavClick('informasi', 'profil')}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg transition-all ${
-                    activeTab === 'informasi'
-                      ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                      : 'hover:bg-slate-200/70 text-slate-700'
-                  }`}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'informasi'
+                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                    : 'hover:bg-slate-200/70 text-slate-700'
+                    }`}
                 >
                   <Info className="w-4 h-4" />
                   Informasi Dusun
@@ -128,52 +126,56 @@ export const Navbar: React.FC = () => {
                   <div className="absolute left-0 top-full w-56 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                     <button
                       onClick={() => handleNavClick('informasi', 'profil')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-                        activeTab === 'informasi' && activeInfoSubTab === 'profil'
-                          ? 'bg-emerald-50 text-emerald-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'profil'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                     >
                       • Profil Dusun
                     </button>
                     <button
                       onClick={() => handleNavClick('informasi', 'sejarah')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-                        activeTab === 'informasi' && activeInfoSubTab === 'sejarah'
-                          ? 'bg-emerald-50 text-emerald-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'sejarah'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                     >
                       • Sejarah Dusun
                     </button>
                     <button
                       onClick={() => handleNavClick('informasi', 'visi-misi')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-                        activeTab === 'informasi' && activeInfoSubTab === 'visi-misi'
-                          ? 'bg-emerald-50 text-emerald-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'visi-misi'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                     >
                       • Visi dan Misi
                     </button>
                     <button
                       onClick={() => handleNavClick('informasi', 'struktur')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-                        activeTab === 'informasi' && activeInfoSubTab === 'struktur'
-                          ? 'bg-emerald-50 text-emerald-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'struktur'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                     >
                       • Struktur Pemerintahan Dusun
+                    </button>
+                    <button
+                      onClick={() => handleNavClick('informasi', 'organisasi')}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'organisasi'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                      • Lembaga & Organisasi
                     </button>
                     <div className="my-1 border-t border-slate-100"></div>
                     <button
                       onClick={() => handleNavClick('informasi', 'berita')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${
-                        activeTab === 'informasi' && activeInfoSubTab === 'berita'
-                          ? 'bg-emerald-50 text-emerald-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'berita'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
                     >
                       • Berita & Pengumuman
                     </button>
@@ -187,11 +189,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-umkm"
                 onClick={() => handleNavClick('umkm')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'umkm'
-                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'umkm'
+                  ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <Store className="w-4 h-4" />
                 UMKM
@@ -203,11 +204,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-wisata"
                 onClick={() => handleNavClick('wisata')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'wisata'
-                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'wisata'
+                  ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <Compass className="w-4 h-4" />
                 Wisata
@@ -219,11 +219,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-budaya"
                 onClick={() => handleNavClick('budaya')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'budaya'
-                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'budaya'
+                  ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <Landmark className="w-4 h-4" />
                 Budaya
@@ -235,11 +234,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-sda"
                 onClick={() => handleNavClick('sda')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'sda'
-                    ? 'bg-emerald-700 text-white font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'sda'
+                  ? 'bg-emerald-700 text-white font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <Trees className="w-4 h-4" />
                 Sumber Daya Alam
@@ -251,11 +249,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tab-admin"
                 onClick={() => handleNavClick('admin')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${
-                  activeTab === 'admin'
-                    ? 'bg-slate-900 text-amber-400 font-semibold shadow-xs'
-                    : 'hover:bg-slate-200/70 text-slate-700'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all ${activeTab === 'admin'
+                  ? 'bg-slate-900 text-amber-400 font-semibold shadow-xs'
+                  : 'hover:bg-slate-200/70 text-slate-700'
+                  }`}
               >
                 <ShieldCheck className="w-4 h-4 text-amber-500" />
                 Administrator
@@ -274,9 +271,8 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden bg-white border-b border-slate-200 p-4 space-y-3 animate-in slide-in-from-top duration-200">
           <button
             onClick={() => handleNavClick('beranda')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${
-              activeTab === 'beranda' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${activeTab === 'beranda' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <Home className="w-5 h-5" />
             Beranda
@@ -311,6 +307,12 @@ export const Navbar: React.FC = () => {
               • Struktur Pemerintahan
             </button>
             <button
+              onClick={() => handleNavClick('informasi', 'organisasi')}
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
+            >
+              • Lembaga & Organisasi
+            </button>
+            <button
               onClick={() => handleNavClick('informasi', 'berita')}
               className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
             >
@@ -320,9 +322,8 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => handleNavClick('umkm')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${
-              activeTab === 'umkm' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${activeTab === 'umkm' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <Store className="w-5 h-5" />
             UMKM Dusun
@@ -330,9 +331,8 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => handleNavClick('wisata')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${
-              activeTab === 'wisata' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${activeTab === 'wisata' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <Compass className="w-5 h-5" />
             Wisata Dusun
@@ -340,9 +340,8 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => handleNavClick('budaya')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${
-              activeTab === 'budaya' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${activeTab === 'budaya' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <Landmark className="w-5 h-5" />
             Budaya & Tradisi
@@ -350,9 +349,8 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => handleNavClick('sda')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${
-              activeTab === 'sda' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm ${activeTab === 'sda' ? 'bg-emerald-700 text-white' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <Trees className="w-5 h-5" />
             Sumber Daya Alam
@@ -360,9 +358,8 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => handleNavClick('admin')}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-sm ${
-              activeTab === 'admin' ? 'bg-slate-900 text-amber-400' : 'text-slate-800 hover:bg-slate-100'
-            }`}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-sm ${activeTab === 'admin' ? 'bg-slate-900 text-amber-400' : 'text-slate-800 hover:bg-slate-100'
+              }`}
           >
             <ShieldCheck className="w-5 h-5 text-amber-500" />
             Panel Administrator
