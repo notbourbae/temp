@@ -205,7 +205,9 @@ function mapOrganisasi(data: any): OrganisasiItem {
     deskripsi: data.deskripsi || '',
     ketua: data.ketua || '',
     kontak: data.kontak || '',
-    lokasiAtauKantor: data.lokasi_atau_kantor || ''
+    lokasiAtauKantor: data.lokasi_atau_kantor || '',
+    logoAtauFoto: data.logo_atau_foto || '',
+    anggota: Array.isArray(data.anggota) ? data.anggota : []
   };
 }
 
@@ -663,7 +665,9 @@ export async function createOrganisasi(data: OrganisasiItem) {
     deskripsi: data.deskripsi,
     ketua: data.ketua,
     kontak: data.kontak,
-    lokasi_atau_kantor: data.lokasiAtauKantor
+    lokasi_atau_kantor: data.lokasiAtauKantor,
+    logo_atau_foto: data.logoAtauFoto || '',
+    anggota: data.anggota || []
   });
 }
 
@@ -677,6 +681,8 @@ export async function updateOrganisasi(id: string, data: Partial<OrganisasiItem>
   if (data.ketua !== undefined) payload.ketua = data.ketua;
   if (data.kontak !== undefined) payload.kontak = data.kontak;
   if (data.lokasiAtauKantor !== undefined) payload.lokasi_atau_kantor = data.lokasiAtauKantor;
+  if (data.logoAtauFoto !== undefined) payload.logo_atau_foto = data.logoAtauFoto;
+  if (data.anggota !== undefined) payload.anggota = data.anggota;
   await supabase.from('organisasi').update(payload).eq('id', id);
 }
 

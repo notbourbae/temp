@@ -7,19 +7,23 @@ interface ImageUploaderProps {
   onChange: (value: string) => void;
   label?: string;
   placeholder?: string;
+  onImageUploaded?: (url: string) => void;
 }
 
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
   value,
   onChange,
   label = 'Foto / Gambar',
-  placeholder = 'https://...'
+  placeholder = 'https://...',
+  onImageUploaded
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showUrlInput, setShowUrlInput] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [isCompressing, setIsCompressing] = useState<boolean>(false);
   const [compressionInfo, setCompressionInfo] = useState<string | null>(null);
+
+  const isCompact = typeof onImageUploaded === 'function' && !onChange;
 
   const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -32,7 +36,11 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     try {
       const result = await compressImageUnder1MB(file, 1024 * 1024); // Force under 1MB
-      onChange(result.dataUrl);
+      if (onImageUploaded) {
+        onImageUploaded(result.dataUrl);
+      } else {
+        onChange(result.dataUrl);
+      }
       if (result.infoText) {
         setCompressionInfo(result.infoText);
       }
@@ -75,6 +83,38 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className="space-y-1.5">
+      {isCompact ? (
+        <>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          {isCompressing ? (
+            <button
+              type="button"
+              disabled
+              className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-500 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold cursor-wait"
+            >
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Mengompres...
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              title={label}
+              className="inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white border border-transparent rounded-lg px-3 py-2 text-xs font-semibold transition-colors shadow-sm cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              {label}
+            </button>
+          )}
+        </>
+      ) : (
+        <>
       <div className="flex items-center justify-between">
         <label className="block font-bold text-slate-700 text-xs">{label}</label>
         <button
@@ -175,6 +215,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             </p>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

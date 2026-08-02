@@ -105,6 +105,14 @@ export interface StatistikProduksi {
   peternakanEkor: number;
 }
 
+export interface AnggotaOrganisasi {
+  id: string;
+  nama: string;
+  jabatan: string;
+  foto: string;
+  kontak: string;
+}
+
 export interface OrganisasiItem {
   id: string;
   nama: string;
@@ -114,6 +122,8 @@ export interface OrganisasiItem {
   ketua: string;
   kontak: string;
   lokasiAtauKantor: string;
+  logoAtauFoto?: string;
+  anggota?: AnggotaOrganisasi[];
 }
 
 export interface DusunInfo {

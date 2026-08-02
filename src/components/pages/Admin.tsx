@@ -28,9 +28,12 @@ import {
   Calendar,
   Sparkles,
   Quote,
-  Landmark
+  Landmark,
+  UserPlus,
+  UserMinus,
+  UserCheck
 } from 'lucide-react';
-import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem } from '../../types';
+import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem, AnggotaOrganisasi } from '../../types';
 import { ImageUploader } from '../ImageUploader';
 
 export const Admin: React.FC = () => {
@@ -91,22 +94,62 @@ export const Admin: React.FC = () => {
   const [newOrgKetua, setNewOrgKetua] = useState('');
   const [newOrgKontak, setNewOrgKontak] = useState('');
   const [newOrgLokasi, setNewOrgLokasi] = useState('Balai Dusun');
+  const [newOrgLogo, setNewOrgLogo] = useState('');
+  const [newOrgMembers, setNewOrgMembers] = useState<AnggotaOrganisasi[]>([]);
+
+  // Input temporary for member in new org creation
+  const [newMemName, setNewMemName] = useState('');
+  const [newMemRole, setNewMemRole] = useState('Anggota');
+  const [newMemFoto, setNewMemFoto] = useState('');
+  const [newMemKontak, setNewMemKontak] = useState('');
+
+  // Managing members modal for an existing organization
+  const [managingOrgMembersItem, setManagingOrgMembersItem] = useState<OrganisasiItem | null>(null);
+  const [modalMemName, setModalMemName] = useState('');
+  const [modalMemRole, setModalMemRole] = useState('Anggota');
+  const [modalMemFoto, setModalMemFoto] = useState('');
+  const [modalMemKontak, setModalMemKontak] = useState('');
 
   const [editingOrgId, setEditingOrgId] = useState<string | null>(null);
   const [editOrgForm, setEditOrgForm] = useState<OrganisasiItem | null>(null);
+
+  const handleAddMemberToNewOrg = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemName.trim()) return;
+    const member: AnggotaOrganisasi = {
+      id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      nama: newMemName.trim(),
+      jabatan: newMemRole.trim() || 'Anggota',
+      foto: newMemFoto.trim(),
+      kontak: newMemKontak.trim()
+    };
+    setNewOrgMembers(prev => [...prev, member]);
+    setNewMemName('');
+    setNewMemRole('Anggota');
+    setNewMemFoto('');
+    setNewMemKontak('');
+  };
+
+  const handleRemoveMemberFromNewOrg = (id: string) => {
+    setNewOrgMembers(prev => prev.filter(m => m.id !== id));
+  };
 
   const handleCreateOrganisasi = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newOrgName || !newOrgDesc) return;
 
+    const finalJumlahAnggota = newOrgAnggota || (newOrgMembers.length > 0 ? `${newOrgMembers.length} Anggota` : 'Aktif');
+
     addOrganisasi({
       nama: newOrgName,
       kategori: newOrgCat,
-      jumlahAnggota: newOrgAnggota || 'Aktif',
+      jumlahAnggota: finalJumlahAnggota,
       deskripsi: newOrgDesc,
       ketua: newOrgKetua,
       kontak: newOrgKontak,
-      lokasiAtauKantor: newOrgLokasi
+      lokasiAtauKantor: newOrgLokasi,
+      logoAtauFoto: newOrgLogo,
+      anggota: newOrgMembers
     });
 
     setNewOrgName('');
@@ -115,12 +158,54 @@ export const Admin: React.FC = () => {
     setNewOrgKetua('');
     setNewOrgKontak('');
     setNewOrgLokasi('Balai Dusun');
+    setNewOrgLogo('');
+    setNewOrgMembers([]);
     alert('Organisasi / Lembaga baru berhasil ditambahkan!');
+  };
+
+  const handleAddMemberToExistingOrg = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!managingOrgMembersItem || !modalMemName.trim()) return;
+
+    const newMember: AnggotaOrganisasi = {
+      id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      nama: modalMemName.trim(),
+      jabatan: modalMemRole.trim() || 'Anggota',
+      foto: modalMemFoto.trim(),
+      kontak: modalMemKontak.trim()
+    };
+
+    const updatedMembers = [...(managingOrgMembersItem.anggota || []), newMember];
+    const updatedOrg: OrganisasiItem = {
+      ...managingOrgMembersItem,
+      anggota: updatedMembers,
+      jumlahAnggota: `${updatedMembers.length} Anggota`
+    };
+
+    updateOrganisasi(managingOrgMembersItem.id, updatedOrg);
+    setManagingOrgMembersItem(updatedOrg);
+    setModalMemName('');
+    setModalMemRole('Anggota');
+    setModalMemFoto('');
+    setModalMemKontak('');
+  };
+
+  const handleRemoveMemberFromExistingOrg = (memberId: string) => {
+    if (!managingOrgMembersItem) return;
+    const updatedMembers = (managingOrgMembersItem.anggota || []).filter(m => m.id !== memberId);
+    const updatedOrg: OrganisasiItem = {
+      ...managingOrgMembersItem,
+      anggota: updatedMembers,
+      jumlahAnggota: `${updatedMembers.length} Anggota`
+    };
+
+    updateOrganisasi(managingOrgMembersItem.id, updatedOrg);
+    setManagingOrgMembersItem(updatedOrg);
   };
 
   const startEditOrganisasi = (item: OrganisasiItem) => {
     setEditingOrgId(item.id);
-    setEditOrgForm({ ...item });
+    setEditOrgForm({ ...item, anggota: item.anggota || [] });
   };
 
   const handleSaveEditOrganisasi = (e: React.FormEvent) => {
@@ -2501,11 +2586,11 @@ export const Admin: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">Tambah Lembaga / Organisasi Baru</h3>
-                <p className="text-xs text-slate-500">Daftarkan wadah kemasyarakatan, kelompok tani, kepemudaan, atau keagamaan dusun.</p>
+                <p className="text-xs text-slate-500">Daftarkan wadah kemasyarakatan, kelompok tani, kepemudaan, atau keagamaan dusun beserta anggota-anggotanya.</p>
               </div>
             </div>
 
-            <form onSubmit={handleCreateOrganisasi} className="space-y-4">
+            <form onSubmit={handleCreateOrganisasi} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="font-bold text-slate-700">Nama Organisasi / Lembaga <span className="text-red-500">*</span></label>
@@ -2542,7 +2627,7 @@ export const Admin: React.FC = () => {
                     type="text"
                     value={newOrgAnggota}
                     onChange={(e) => setNewOrgAnggota(e.target.value)}
-                    placeholder="misal: 45 Pemuda / 12 Kader"
+                    placeholder="Otomatis dari daftar anggota jika dikosongkan"
                     className="w-full p-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-hidden font-medium"
                   />
                 </div>
@@ -2593,16 +2678,272 @@ export const Admin: React.FC = () => {
                 />
               </div>
 
+              {/* Sub-section Input Member/Anggota */}
+              <div className="p-4 sm:p-5 bg-teal-50/60 rounded-2xl border border-teal-200/80 space-y-4">
+                <div className="flex items-center justify-between border-b border-teal-200/60 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-teal-800" />
+                    <h4 className="font-extrabold text-slate-900 text-sm">Input Anggota & Pengurus Organisasi</h4>
+                  </div>
+                  <span className="text-[11px] font-bold text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full">
+                    {newOrgMembers.length} Anggota Ditambahkan
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-end bg-white p-3.5 rounded-xl border border-teal-100 shadow-2xs">
+                  <div className="space-y-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Nama Anggota</label>
+                    <input
+                      type="text"
+                      value={newMemName}
+                      onChange={(e) => setNewMemName(e.target.value)}
+                      placeholder="Nama lengkap..."
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Jabatan / Posisi</label>
+                    <input
+                      type="text"
+                      value={newMemRole}
+                      onChange={(e) => setNewMemRole(e.target.value)}
+                      placeholder="Ketua / Sekretaris / Anggota..."
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-700">No. WhatsApp / Kontak</label>
+                    <input
+                      type="text"
+                      value={newMemKontak}
+                      onChange={(e) => setNewMemKontak(e.target.value)}
+                      placeholder="62812345678..."
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1 md:col-span-3">
+                    <label className="text-[11px] font-bold text-slate-700">Foto Anggota (Upload/URL)</label>
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={newMemFoto}
+                        onChange={(e) => setNewMemFoto(e.target.value)}
+                        placeholder="URL atau Upload..."
+                        className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium flex-1 min-w-0"
+                      />
+                      <ImageUploader
+                        onImageUploaded={(url) => setNewMemFoto(url)}
+                        label="Unggah"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-1 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleAddMemberToNewOrg}
+                      className="w-full md:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-3 py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" /> <span className="md:hidden">Tambah</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* List member baru */}
+                {newOrgMembers.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
+                    {newOrgMembers.map((m) => (
+                      <div key={m.id} className="bg-white p-2.5 rounded-xl border border-teal-200 flex items-center justify-between gap-2 shadow-2xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {m.foto ? (
+                            <img src={m.foto} alt={m.nama} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center shrink-0 text-xs">
+                              {m.nama.charAt(0)}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-extrabold text-slate-900 text-xs truncate">{m.nama}</p>
+                            <p className="text-[10px] text-teal-700 font-medium">{m.jabatan}</p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMemberFromNewOrg(m.id)}
+                          className="p-1 text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer shrink-0"
+                          title="Hapus Anggota"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="flex justify-end pt-2">
                 <button
                   type="submit"
                   className="bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
                 >
-                  <Save className="w-4 h-4" /> Simpan Organisasi
+                  <Save className="w-4 h-4" /> Simpan Organisasi Baru
                 </button>
               </div>
             </form>
           </div>
+
+          {/* Modal Kelola Anggota Organisasi (Managing Members Modal) */}
+          {managingOrgMembersItem && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+              <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900">Kelola Anggota & Pengurus</h3>
+                      <p className="text-xs text-slate-500">{managingOrgMembersItem.nama} ({managingOrgMembersItem.kategori})</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setManagingOrgMembersItem(null)}
+                    className="p-2 hover:bg-slate-100 rounded-full transition-colors cursor-pointer text-slate-400 hover:text-slate-700"
+                  >
+                    <XCircle className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Form Tambah Anggota Langsung */}
+                <form onSubmit={handleAddMemberToExistingOrg} className="p-4 bg-teal-50 rounded-2xl border border-teal-200/80 space-y-3">
+                  <h4 className="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
+                    <UserPlus className="w-4 h-4 text-teal-700" /> Tambah Anggota Baru ke {managingOrgMembersItem.nama}
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 text-[11px]">Nama Lengkap <span className="text-red-500">*</span></label>
+                      <input
+                        type="text"
+                        required
+                        value={modalMemName}
+                        onChange={(e) => setModalMemName(e.target.value)}
+                        placeholder="Nama anggota..."
+                        className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 text-[11px]">Jabatan / Posisi</label>
+                      <input
+                        type="text"
+                        value={modalMemRole}
+                        onChange={(e) => setModalMemRole(e.target.value)}
+                        placeholder="Ketua / Sekretaris / Anggota..."
+                        className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 text-[11px]">No. WhatsApp Kontak</label>
+                      <input
+                        type="text"
+                        value={modalMemKontak}
+                        onChange={(e) => setModalMemKontak(e.target.value)}
+                        placeholder="628123456789..."
+                        className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 text-[11px]">Foto Anggota (URL atau Upload)</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={modalMemFoto}
+                          onChange={(e) => setModalMemFoto(e.target.value)}
+                          placeholder="https://..."
+                          className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
+                        />
+                        <ImageUploader
+                          onImageUploaded={(url) => setModalMemFoto(url)}
+                          label="Foto"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="submit"
+                      className="bg-teal-700 hover:bg-teal-800 text-white font-bold px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" /> Tambah Anggota Ini
+                    </button>
+                  </div>
+                </form>
+
+                {/* Roster Anggota */}
+                <div className="space-y-3">
+                  <h4 className="font-extrabold text-slate-900 text-xs">
+                    Daftar Anggota Terdaftar ({(managingOrgMembersItem.anggota || []).length})
+                  </h4>
+
+                  {(!managingOrgMembersItem.anggota || managingOrgMembersItem.anggota.length === 0) ? (
+                    <div className="text-center py-8 bg-slate-50 rounded-2xl text-slate-500 text-xs border border-slate-200">
+                      Belum ada anggota terdaftar untuk organisasi ini. Tambahkan anggota menggunakan form di atas.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
+                      {managingOrgMembersItem.anggota.map((m) => (
+                        <div
+                          key={m.id}
+                          className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs hover:bg-white transition-colors"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {m.foto ? (
+                              <img src={m.foto} alt={m.nama} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-slate-300 shrink-0" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-black text-sm flex items-center justify-center shrink-0">
+                                {m.nama.charAt(0)}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="font-extrabold text-slate-900 text-xs truncate">{m.nama}</p>
+                              <p className="text-[10px] text-teal-700 font-bold bg-teal-100/80 px-2 py-0.5 rounded-md inline-block mt-0.5">{m.jabatan}</p>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMemberFromExistingOrg(m.id)}
+                            className="p-1.5 text-red-500 hover:bg-red-100 rounded-lg transition-colors cursor-pointer shrink-0"
+                            title="Hapus Anggota Ini"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setManagingOrgMembersItem(null)}
+                    className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl cursor-pointer transition-colors"
+                  >
+                    Selesai
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Modal Edit Organisasi */}
           {editingOrgId && editOrgForm && (
@@ -2657,7 +2998,7 @@ export const Admin: React.FC = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="font-bold text-slate-700">Jumlah Anggota</label>
+                      <label className="font-bold text-slate-700">Jumlah Anggota / Status</label>
                       <input
                         type="text"
                         value={editOrgForm.jumlahAnggota}
@@ -2732,7 +3073,7 @@ export const Admin: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">Daftar Lembaga & Organisasi Dusun ({organisasiList.length})</h3>
-                <p className="text-xs text-slate-500">Kelola informasi organisasi yang tampil pada halaman publik.</p>
+                <p className="text-xs text-slate-500">Kelola informasi dan daftar anggota organisasi yang tampil pada halaman publik.</p>
               </div>
             </div>
 
@@ -2745,17 +3086,28 @@ export const Admin: React.FC = () => {
                 {organisasiList.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-3 flex flex-col justify-between hover:border-teal-300 transition-all"
+                    className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-3 flex flex-col justify-between hover:border-teal-300 transition-all shadow-2xs"
                   >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
-                          {item.kategori}
-                        </span>
-                        <span className="text-[11px] text-slate-500 font-medium">{item.jumlahAnggota}</span>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-3">
+                          {item.logoAtauFoto ? (
+                            <img src={item.logoAtauFoto} alt={item.nama} referrerPolicy="no-referrer" className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 font-bold flex items-center justify-center shrink-0">
+                              <Building className="w-5 h-5" />
+                            </div>
+                          )}
+                          <div>
+                            <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider inline-block">
+                              {item.kategori}
+                            </span>
+                            <h4 className="font-extrabold text-slate-900 text-sm leading-snug mt-0.5">{item.nama}</h4>
+                          </div>
+                        </div>
                       </div>
-                      <h4 className="font-extrabold text-slate-900 text-sm">{item.nama}</h4>
-                      <p className="text-[11px] text-slate-600 line-clamp-3 leading-relaxed">{item.deskripsi}</p>
+
+                      <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">{item.deskripsi}</p>
                     </div>
 
                     <div className="space-y-2 pt-3 border-t border-slate-200">
@@ -2764,18 +3116,21 @@ export const Admin: React.FC = () => {
                           <span className="text-slate-400">Ketua:</span> <strong className="text-slate-800">{item.ketua}</strong>
                         </p>
                       )}
-                      {item.lokasiAtauKantor && (
-                        <p className="text-[11px] text-slate-500 flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-teal-600 shrink-0" /> {item.lokasiAtauKantor}
-                        </p>
-                      )}
 
-                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                      {/* Button Kelola Anggota */}
+                      <button
+                        onClick={() => setManagingOrgMembersItem(item)}
+                        className="w-full bg-teal-700 hover:bg-teal-800 text-white font-extrabold px-3 py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Users className="w-3.5 h-3.5" /> Kelola Anggota ({(item.anggota || []).length})
+                      </button>
+
+                      <div className="flex items-center justify-end gap-2 pt-1">
                         <button
                           onClick={() => startEditOrganisasi(item)}
                           className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-lg text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
                         >
-                          <Edit3 className="w-3.5 h-3.5" /> Edit
+                          <Edit3 className="w-3.5 h-3.5" /> Edit Info
                         </button>
                         <button
                           onClick={() => handleDeleteOrganisasi(item.id, item.nama)}

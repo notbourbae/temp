@@ -143,6 +143,8 @@ CREATE TABLE IF NOT EXISTS organisasi (
   ketua TEXT DEFAULT '',
   kontak TEXT DEFAULT '',
   lokasi_atau_kantor TEXT DEFAULT '',
+  logo_atau_foto TEXT DEFAULT '',
+  anggota JSONB DEFAULT '[]',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -167,6 +169,9 @@ ALTER TABLE wisata_events ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAUL
 ALTER TABLE wisata_events ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 ALTER TABLE budaya ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'aktif';
+
+ALTER TABLE organisasi ADD COLUMN IF NOT EXISTS logo_atau_foto TEXT DEFAULT '';
+ALTER TABLE organisasi ADD COLUMN IF NOT EXISTS anggota JSONB DEFAULT '[]';
 
 -- Buat index untuk performa query
 CREATE INDEX IF NOT EXISTS idx_berita_created ON berita(created_at DESC);
