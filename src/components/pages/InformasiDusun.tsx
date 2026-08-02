@@ -30,7 +30,8 @@ export const InformasiDusun: React.FC = () => {
     pejabatList,
     beritaList,
     setSelectedBeritaModal,
-    organisasiList
+    organisasiList,
+    setSelectedOrganisasiModal
   } = useDusun();
 
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -52,8 +53,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('profil')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'profil'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <MapPin className="w-4 h-4" />
@@ -63,8 +64,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('sejarah')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'sejarah'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <History className="w-4 h-4" />
@@ -74,8 +75,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('visi-misi')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'visi-misi'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <Target className="w-4 h-4" />
@@ -85,8 +86,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('struktur')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'struktur'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <Building className="w-4 h-4" />
@@ -96,8 +97,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('organisasi')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'organisasi'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <Users className="w-4 h-4" />
@@ -107,8 +108,8 @@ export const InformasiDusun: React.FC = () => {
         <button
           onClick={() => setActiveInfoSubTab('berita')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'berita'
-              ? 'bg-emerald-700 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
             }`}
         >
           <Newspaper className="w-4 h-4" />
@@ -386,16 +387,30 @@ export const InformasiDusun: React.FC = () => {
                           {item.lokasiAtauKantor}
                         </div>
                       )}
-                      {item.kontak && (
-                        <a
-                          href={`https://wa.me/${item.kontak.replace(/[^0-9]/g, '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1.5 text-xs text-emerald-800 font-bold bg-emerald-100 hover:bg-emerald-200 px-3 py-2 rounded-xl transition-colors w-full"
+
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <button
+                          onClick={() => setSelectedOrganisasiModal(item)}
+                          className="inline-flex items-center justify-center gap-1.5 text-xs text-teal-800 font-bold bg-teal-100 hover:bg-teal-200 px-3 py-2.5 rounded-xl transition-all cursor-pointer"
                         >
-                          <Phone className="w-3.5 h-3.5" /> Hubungi Pengurus
-                        </a>
-                      )}
+                          <Users className="w-3.5 h-3.5" /> Anggota
+                        </button>
+
+                        {item.kontak ? (
+                          <a
+                            href={`https://wa.me/${item.kontak.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 text-xs text-emerald-800 font-bold bg-emerald-100 hover:bg-emerald-200 px-3 py-2.5 rounded-xl transition-all"
+                          >
+                            <Phone className="w-3.5 h-3.5" /> Hubungi
+                          </a>
+                        ) : (
+                          <div className="bg-slate-100 text-slate-400 text-xs font-bold px-3 py-2.5 rounded-xl text-center flex items-center justify-center">
+                            N/A
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -442,7 +457,7 @@ export const InformasiDusun: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                   <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-md ${item.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950' :
-                      item.kategori === 'Agenda' ? 'bg-blue-600 text-white' : 'bg-emerald-700 text-white'
+                    item.kategori === 'Agenda' ? 'bg-blue-600 text-white' : 'bg-emerald-700 text-white'
                     }`}>
                     {item.kategori}
                   </span>
