@@ -11,7 +11,8 @@ import {
   PotensiSDA,
   StatistikProduksi,
   BudayaItem,
-  OrganisasiItem
+  OrganisasiItem,
+  TokohDusun
 } from '../types';
 import {
   syncAllFromSupabase,
@@ -42,6 +43,9 @@ import {
   createOrganisasi,
   updateOrganisasi as updateOrganisasiSupabase,
   deleteOrganisasi as deleteOrganisasiSupabase,
+  createTokoh,
+  updateTokoh as updateTokohSupabase,
+  deleteTokoh as deleteTokohSupabase,
   isSupabaseConfigured,
   supabase
 } from '../lib/supabase';
@@ -152,6 +156,11 @@ interface DusunContextType {
   updateOrganisasi: (id: string, data: Partial<OrganisasiItem>) => void;
   deleteOrganisasi: (id: string) => void;
 
+  tokohList: TokohDusun[];
+  addTokoh: (tokoh: Omit<TokohDusun, 'id'>) => void;
+  updateTokoh: (id: string, data: Partial<TokohDusun>) => void;
+  deleteTokoh: (id: string) => void;
+
   wisataEvents: WisataEvent[];
   addWisataEvent: (event: Omit<WisataEvent, 'id'>) => void;
   updateWisataEvent: (id: string, data: Partial<WisataEvent>) => void;
@@ -218,6 +227,8 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [organisasiList, setOrganisasiList] = useState<OrganisasiItem[]>([]);
 
+  const [tokohList, setTokohList] = useState<TokohDusun[]>([]);
+
   const [potensiSDA, setPotensiSDA] = useState<PotensiSDA[]>([]);
 
   const [statistikProduksi, setStatistikProduksi] = useState<StatistikProduksi[]>([]);
@@ -250,6 +261,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setPotensiSDA(data.potensiSDA);
     setStatistikProduksi(data.statistikProduksi);
     setOrganisasiList(data.organisasiList ?? []);
+    setTokohList(data.tokohList ?? []);
   }, []);
 
   // ─── Initial load from Supabase ───────────────────
@@ -596,6 +608,43 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  const addTokoh = (data: Omit<TokohDusun, 'id'>) => {
+    const newItem: TokohDusun = {
+      ...data,
+      id: 'tokoh_' + Date.now()
+    };
+    setTokohList(prev => [newItem, ...prev]);
+    invalidateDusunCache();
+    if (isSupabaseConfigured && supabase) {
+      createTokoh(newItem).catch(err => {
+        console.error('Gagal simpan tokoh ke Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data tokoh tersimpan lokal, tapi gagal sync ke Supabase. Pastikan tabel "tokoh" sudah dibuat di database.' });
+      });
+    }
+  };
+
+  const updateTokoh = (id: string, data: Partial<TokohDusun>) => {
+    invalidateDusunCache();
+    setTokohList(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
+    if (isSupabaseConfigured && supabase) {
+      updateTokohSupabase(id, data).catch(err => {
+        console.error('Gagal update tokoh ke Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data tokoh terupdate lokal, tapi gagal sync ke Supabase.' });
+      });
+    }
+  };
+
+  const deleteTokoh = (id: string) => {
+    invalidateDusunCache();
+    setTokohList(prev => prev.filter(t => t.id !== id));
+    if (isSupabaseConfigured && supabase) {
+      deleteTokohSupabase(id).catch(err => {
+        console.error('Gagal hapus tokoh dari Supabase:', err);
+        setAdminNotification({ type: 'error', message: 'Data tokoh terhapus lokal, tapi gagal sync ke Supabase.' });
+      });
+    }
+  };
+
   const addPotensiSDA = (sda: Omit<PotensiSDA, 'id'>) => {
     const newItem: PotensiSDA = {
       ...sda,
@@ -675,6 +724,10 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addOrganisasi,
         updateOrganisasi,
         deleteOrganisasi,
+        tokohList,
+        addTokoh,
+        updateTokoh,
+        deleteTokoh,
         potensiSDA,
         addPotensiSDA,
         updatePotensiSDA,

@@ -149,6 +149,18 @@ CREATE TABLE IF NOT EXISTS organisasi (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 10. Tabel Tokoh / Sejarawan Dusun
+CREATE TABLE IF NOT EXISTS tokoh (
+  id TEXT PRIMARY KEY,
+  nama TEXT NOT NULL,
+  peran TEXT DEFAULT '',
+  foto TEXT DEFAULT '',
+  kontak TEXT DEFAULT '',
+  biodata TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ─────────────────────────────────────────────
 -- MIGRASI TABEL LAMA
 -- Jalankan jika tabel sudah pernah dibuat sebelumnya
@@ -190,3 +202,4 @@ ALTER TABLE wisata_events DISABLE ROW LEVEL SECURITY;
 ALTER TABLE potensi_sda DISABLE ROW LEVEL SECURITY;
 ALTER TABLE statistik_produksi DISABLE ROW LEVEL SECURITY;
 ALTER TABLE organisasi DISABLE ROW LEVEL SECURITY;
+ALTER TABLE tokoh DISABLE ROW LEVEL SECURITY;

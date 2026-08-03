@@ -10,7 +10,8 @@ import {
   PotensiSDA,
   StatistikProduksi,
   BudayaItem,
-  OrganisasiItem
+  OrganisasiItem,
+  TokohDusun
 } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -60,6 +61,7 @@ export interface AllDusunData {
   potensiSDA: PotensiSDA[];
   statistikProduksi: StatistikProduksi[];
   organisasiList: OrganisasiItem[];
+  tokohList: TokohDusun[];
 }
 
 // ──────────────────────────────────────────────────
@@ -211,6 +213,17 @@ function mapOrganisasi(data: any): OrganisasiItem {
   };
 }
 
+function mapTokoh(data: any): TokohDusun {
+  return {
+    id: data.id,
+    nama: data.nama,
+    peran: data.peran || '',
+    foto: data.foto || '',
+    kontak: data.kontak || '',
+    biodata: data.biodata || ''
+  };
+}
+
 function mapStatistikProduksi(data: any): StatistikProduksi {
   return {
     tahun: data.tahun || '',
@@ -261,6 +274,14 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
       console.warn('Gagal sync organisasi (tabel mungkin belum dibuat):', err);
     }
 
+    let tokohRes: any[] | null = null;
+    try {
+      const res = await supabase.from('tokoh').select('*');
+      tokohRes = res.data;
+    } catch (err) {
+      console.warn('Gagal sync tokoh (tabel mungkin belum dibuat):', err);
+    }
+
     const hasData = dusunInfoRes || (pejabatRes && pejabatRes.length > 0);
     if (!hasData) return null;
 
@@ -274,7 +295,8 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
       budayaList: (budayaRes || []).map(mapBudaya),
       potensiSDA: (potensiSDARes || []).map(mapPotensiSDA),
       statistikProduksi: (statistikRes || []).map(mapStatistikProduksi),
-      organisasiList: (organisasiRes || []).map(mapOrganisasi)
+      organisasiList: (organisasiRes || []).map(mapOrganisasi),
+      tokohList: (tokohRes || []).map(mapTokoh)
     };
   } catch (err) {
     console.error('Error syncing from Supabase:', err);
@@ -689,4 +711,36 @@ export async function updateOrganisasi(id: string, data: Partial<OrganisasiItem>
 export async function deleteOrganisasi(id: string) {
   if (!supabase) return;
   await supabase.from('organisasi').delete().eq('id', id);
+}
+
+// ──────────────────────────────────────────────────
+// TOKOH
+// ──────────────────────────────────────────────────
+
+export async function createTokoh(data: TokohDusun) {
+  if (!supabase) return;
+  await supabase.from('tokoh').insert({
+    id: data.id,
+    nama: data.nama,
+    peran: data.peran,
+    foto: data.foto || '',
+    kontak: data.kontak || '',
+    biodata: data.biodata || ''
+  });
+}
+
+export async function updateTokoh(id: string, data: Partial<TokohDusun>) {
+  if (!supabase) return;
+  const payload: Record<string, unknown> = {};
+  if (data.nama !== undefined) payload.nama = data.nama;
+  if (data.peran !== undefined) payload.peran = data.peran;
+  if (data.foto !== undefined) payload.foto = data.foto;
+  if (data.kontak !== undefined) payload.kontak = data.kontak;
+  if (data.biodata !== undefined) payload.biodata = data.biodata;
+  await supabase.from('tokoh').update(payload).eq('id', id);
+}
+
+export async function deleteTokoh(id: string) {
+  if (!supabase) return;
+  await supabase.from('tokoh').delete().eq('id', id);
 }

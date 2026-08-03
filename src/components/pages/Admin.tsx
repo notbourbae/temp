@@ -31,9 +31,10 @@ import {
   Landmark,
   UserPlus,
   UserMinus,
-  UserCheck
+  UserCheck,
+  Award
 } from 'lucide-react';
-import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem, AnggotaOrganisasi } from '../../types';
+import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem, AnggotaOrganisasi, TokohDusun } from '../../types';
 import { ImageUploader } from '../ImageUploader';
 
 export const Admin: React.FC = () => {
@@ -78,13 +79,62 @@ export const Admin: React.FC = () => {
     addOrganisasi,
     updateOrganisasi,
     deleteOrganisasi,
+    tokohList,
+    addTokoh,
+    updateTokoh,
+    deleteTokoh,
     adminNotification,
     setAdminNotification
   } = useDusun();
 
   const [passcode, setPasscode] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'informasi' | 'struktur' | 'berita' | 'umkm' | 'wisata' | 'sda' | 'agenda' | 'budaya' | 'organisasi' | 'pengguna'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'informasi' | 'struktur' | 'tokoh' | 'berita' | 'umkm' | 'wisata' | 'sda' | 'agenda' | 'budaya' | 'organisasi' | 'pengguna'>('dashboard');
+
+  // New Tokoh Form State
+  const [newTokohNama, setNewTokohNama] = useState('');
+  const [newTokohPeran, setNewTokohPeran] = useState('');
+  const [newTokohFoto, setNewTokohFoto] = useState('');
+  const [newTokohKontak, setNewTokohKontak] = useState('');
+  const [newTokohBiodata, setNewTokohBiodata] = useState('');
+
+  // Edit Tokoh State & Handlers
+  const [editingTokohId, setEditingTokohId] = useState<string | null>(null);
+  const [editTokohForm, setEditTokohForm] = useState<TokohDusun | null>(null);
+
+  const startEditTokoh = (item: TokohDusun) => {
+    setEditingTokohId(item.id);
+    setEditTokohForm({ ...item });
+  };
+
+  const handleSaveEditTokoh = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTokohId || !editTokohForm) return;
+    updateTokoh(editingTokohId, editTokohForm);
+    setEditingTokohId(null);
+    setEditTokohForm(null);
+    alert('Data tokoh berhasil diperbarui!');
+  };
+
+  const handleCreateTokoh = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTokohNama || !newTokohPeran) return;
+
+    addTokoh({
+      nama: newTokohNama,
+      peran: newTokohPeran,
+      kontak: newTokohKontak || '',
+      foto: newTokohFoto || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80',
+      biodata: newTokohBiodata || 'Merupakan tokoh/sejarawan yang berkontribusi nyata bagi dusun.'
+    });
+
+    setNewTokohNama('');
+    setNewTokohPeran('');
+    setNewTokohKontak('');
+    setNewTokohFoto('');
+    setNewTokohBiodata('');
+    alert('Tokoh / sejarawan baru berhasil ditambahkan!');
+  };
 
   // Organisasi Form State
   const [newOrgName, setNewOrgName] = useState('');
@@ -109,6 +159,10 @@ export const Admin: React.FC = () => {
   const [modalMemRole, setModalMemRole] = useState('Anggota');
   const [modalMemFoto, setModalMemFoto] = useState('');
   const [modalMemKontak, setModalMemKontak] = useState('');
+
+  // States for updating an existing member
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [editMemberForm, setEditMemberForm] = useState<AnggotaOrganisasi | null>(null);
 
   const [editingOrgId, setEditingOrgId] = useState<string | null>(null);
   const [editOrgForm, setEditOrgForm] = useState<OrganisasiItem | null>(null);
@@ -201,6 +255,26 @@ export const Admin: React.FC = () => {
 
     updateOrganisasi(managingOrgMembersItem.id, updatedOrg);
     setManagingOrgMembersItem(updatedOrg);
+  };
+
+  const handleSaveEditMember = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!managingOrgMembersItem || !editingMemberId || !editMemberForm) return;
+
+    const updatedMembers = (managingOrgMembersItem.anggota || []).map(m =>
+      m.id === editingMemberId ? editMemberForm : m
+    );
+
+    const updatedOrg: OrganisasiItem = {
+      ...managingOrgMembersItem,
+      anggota: updatedMembers,
+      jumlahAnggota: `${updatedMembers.length} Anggota`
+    };
+
+    updateOrganisasi(managingOrgMembersItem.id, updatedOrg);
+    setManagingOrgMembersItem(updatedOrg);
+    setEditingMemberId(null);
+    setEditMemberForm(null);
   };
 
   const startEditOrganisasi = (item: OrganisasiItem) => {
@@ -661,6 +735,15 @@ export const Admin: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setAdminTab('tokoh')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'tokoh' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+            }`}
+        >
+          <Award className="w-4 h-4" />
+          Kelola Tokoh ({tokohList.length})
+        </button>
+
+        <button
           onClick={() => setAdminTab('berita')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'berita' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
             }`}
@@ -751,6 +834,11 @@ export const Admin: React.FC = () => {
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
               <p className="text-xs text-slate-500 font-medium">Lembaga & Organisasi</p>
               <p className="text-3xl font-black text-teal-600">{organisasiList.length}</p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
+              <p className="text-xs text-slate-500 font-medium">Tokoh & Sejarawan</p>
+              <p className="text-3xl font-black text-amber-600">{tokohList.length}</p>
             </div>
           </div>
 
@@ -1357,6 +1445,228 @@ export const Admin: React.FC = () => {
                         }}
                         className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold p-1.5 rounded-xl text-xs transition-colors flex items-center justify-center cursor-pointer"
                         title="Hapus Pejabat"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ADMIN TAB 2.7: KELOLA TOKOH & SEJARAWAN DUSUN */}
+      {adminTab === 'tokoh' && (
+        <div className="space-y-8 animate-in fade-in duration-200">
+
+          {/* Form Tambah Tokoh Baru */}
+          <form onSubmit={handleCreateTokoh} className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 space-y-4 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Plus className="w-4 h-4 text-emerald-600" /> Tambah Tokoh / Sejarawan Baru
+              </h3>
+              <span className="text-slate-500 text-[11px]">Daftar akan langsung tampil di menu Tokoh & Sejarawan Dusun</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Ki Bagoes Sutarmo"
+                  value={newTokohNama}
+                  onChange={e => setNewTokohNama(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Peran / Predikat *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Sejarawan Dusun / Budayawan"
+                  value={newTokohPeran}
+                  onChange={e => setNewTokohPeran(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nomor WhatsApp Kontak (Opsional)</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: 081234567890"
+                  value={newTokohKontak}
+                  onChange={e => setNewTokohKontak(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <ImageUploader
+              label="Foto Tokoh (Opsional)"
+              value={newTokohFoto}
+              onChange={setNewTokohFoto}
+              placeholder="https://images.unsplash.com/... (Kosongkan jika menggunakan foto default)"
+            />
+
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">Biodata, Cerita, & Jasa Tokoh *</label>
+              <textarea
+                rows={4}
+                required
+                placeholder="Tulis biografi singkat, sejarah hidup, penulisan naskah sejarah, atau jasa berharga beliau bagi dusun..."
+                value={newTokohBiodata}
+                onChange={e => setNewTokohBiodata(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <Plus className="w-4 h-4" /> Tambahkan Tokoh / Sejarawan
+            </button>
+          </form>
+
+          {/* List Tokoh Saat Ini */}
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Landmark className="w-5 h-5 text-blue-600" /> Daftar Tokoh & Sejarawan Terdaftar ({tokohList.length})
+              </h3>
+              <span className="text-slate-500 text-xs">Klik Edit untuk mengubah data tokoh</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tokohList.map((t) => {
+                const isEditing = editingTokohId === t.id && editTokohForm !== null;
+
+                if (isEditing && editTokohForm) {
+                  return (
+                    <form
+                      key={t.id}
+                      onSubmit={handleSaveEditTokoh}
+                      className="bg-emerald-50/70 p-4 rounded-2xl border-2 border-emerald-400 space-y-3 text-xs"
+                    >
+                      <h4 className="font-bold text-emerald-950 flex items-center gap-1">
+                        <Edit3 className="w-4 h-4 text-emerald-700" /> Edit Tokoh & Sejarawan
+                      </h4>
+
+                      <div>
+                        <label className="block font-bold mb-1">Nama Tokoh</label>
+                        <input
+                          type="text"
+                          required
+                          value={editTokohForm.nama}
+                          onChange={e => setEditTokohForm({ ...editTokohForm, nama: e.target.value })}
+                          className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold mb-1">Peran / Predikat</label>
+                        <input
+                          type="text"
+                          required
+                          value={editTokohForm.peran}
+                          onChange={e => setEditTokohForm({ ...editTokohForm, peran: e.target.value })}
+                          className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold mb-1">Kontak / WA</label>
+                        <input
+                          type="text"
+                          value={editTokohForm.kontak}
+                          onChange={e => setEditTokohForm({ ...editTokohForm, kontak: e.target.value })}
+                          className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                        />
+                      </div>
+
+                      <ImageUploader
+                        label="Foto Tokoh"
+                        value={editTokohForm.foto}
+                        onChange={val => setEditTokohForm({ ...editTokohForm, foto: val })}
+                      />
+
+                      <div>
+                        <label className="block font-bold mb-1">Biodata & Jasa Tokoh</label>
+                        <textarea
+                          rows={4}
+                          required
+                          value={editTokohForm.biodata}
+                          onChange={e => setEditTokohForm({ ...editTokohForm, biodata: e.target.value })}
+                          className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2">
+                        <button
+                          type="submit"
+                          className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <Save className="w-3.5 h-3.5" /> Simpan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setEditingTokohId(null); setEditTokohForm(null); }}
+                          className="px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-lg text-xs transition-colors cursor-pointer"
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    </form>
+                  );
+                }
+
+                return (
+                  <div key={t.id} className="bg-slate-50 rounded-2xl border border-slate-200 p-5 flex flex-col justify-between space-y-3 hover:border-amber-300 transition-colors">
+                    <div className="flex flex-col items-center text-center space-y-2">
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-amber-500 shadow-xs shrink-0 bg-slate-100">
+                        <img
+                          src={t.foto || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80'}
+                          alt={t.nama}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">{t.nama}</h4>
+                        <p className="text-xs font-semibold text-amber-800 mt-0.5">{t.peran}</p>
+                      </div>
+                      <p className="text-[11px] text-slate-500 line-clamp-4 bg-white p-2.5 rounded-xl border border-slate-200/80 w-full text-left min-h-[80px]">
+                        {t.biodata}
+                      </p>
+                      {t.kontak && (
+                        <div className="flex items-center gap-1 text-[11px] text-slate-600 font-medium">
+                          <Phone className="w-3.5 h-3.5 text-amber-600" /> Kontak: {t.kontak}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-3 border-t border-slate-200/80">
+                      <button
+                        onClick={() => startEditTokoh(t)}
+                        className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold py-1.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Apakah Anda yakin ingin menghapus ${t.nama} dari daftar tokoh & sejarawan?`)) {
+                            deleteTokoh(t.id);
+                          }
+                        }}
+                        className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold p-1.5 rounded-xl text-xs transition-colors flex items-center justify-center cursor-pointer"
+                        title="Hapus Tokoh"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -2899,35 +3209,141 @@ export const Admin: React.FC = () => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
-                      {managingOrgMembersItem.anggota.map((m) => (
-                        <div
-                          key={m.id}
-                          className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs hover:bg-white transition-colors"
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            {m.foto ? (
-                              <img src={m.foto} alt={m.nama} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-slate-300 shrink-0" />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-black text-sm flex items-center justify-center shrink-0">
-                                {m.nama.charAt(0)}
+                      {managingOrgMembersItem.anggota.map((m) => {
+                        const isEditingMember = editingMemberId === m.id && editMemberForm !== null;
+
+                        if (isEditingMember && editMemberForm) {
+                          return (
+                            <form
+                              key={m.id}
+                              onSubmit={handleSaveEditMember}
+                              className="col-span-1 sm:col-span-2 p-4 bg-amber-50 rounded-2xl border border-amber-300 space-y-3 shadow-xs animate-in slide-in-from-top-1 duration-200"
+                            >
+                              <div className="flex items-center justify-between border-b border-amber-200 pb-1.5 mb-1">
+                                <span className="font-bold text-xs text-amber-900 flex items-center gap-1">
+                                  <Edit3 className="w-3.5 h-3.5" /> Edit Anggota
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingMemberId(null);
+                                    setEditMemberForm(null);
+                                  }}
+                                  className="text-[10px] text-slate-600 bg-slate-200 hover:bg-slate-300 font-bold px-2 py-0.5 rounded-md cursor-pointer transition-colors"
+                                >
+                                  Batal
+                                </button>
                               </div>
-                            )}
-                            <div className="min-w-0">
-                              <p className="font-extrabold text-slate-900 text-xs truncate">{m.nama}</p>
-                              <p className="text-[10px] text-teal-700 font-bold bg-teal-100/80 px-2 py-0.5 rounded-md inline-block mt-0.5">{m.jabatan}</p>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-700">Nama Lengkap</label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={editMemberForm.nama}
+                                    onChange={(e) => setEditMemberForm({ ...editMemberForm, nama: e.target.value })}
+                                    className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
+                                  />
+                                </div>
+
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-700">Jabatan / Posisi</label>
+                                  <input
+                                    type="text"
+                                    required
+                                    value={editMemberForm.jabatan}
+                                    onChange={(e) => setEditMemberForm({ ...editMemberForm, jabatan: e.target.value })}
+                                    className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
+                                  />
+                                </div>
+
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-700">No. WhatsApp</label>
+                                  <input
+                                    type="text"
+                                    value={editMemberForm.kontak}
+                                    onChange={(e) => setEditMemberForm({ ...editMemberForm, kontak: e.target.value })}
+                                    className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
+                                  />
+                                </div>
+
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-700">Foto (URL / Upload)</label>
+                                  <div className="flex gap-2">
+                                    <input
+                                      type="text"
+                                      value={editMemberForm.foto}
+                                      onChange={(e) => setEditMemberForm({ ...editMemberForm, foto: e.target.value })}
+                                      className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
+                                    />
+                                    <ImageUploader
+                                      onImageUploaded={(url) => setEditMemberForm({ ...editMemberForm, foto: url })}
+                                      label="Foto"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex justify-end pt-1">
+                                <button
+                                  type="submit"
+                                  className="bg-teal-700 hover:bg-teal-800 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition-colors shadow-2xs cursor-pointer"
+                                >
+                                  Simpan Perubahan
+                                </button>
+                              </div>
+                            </form>
+                          );
+                        }
+
+                        return (
+                          <div
+                            key={m.id}
+                            className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 shadow-2xs hover:bg-white transition-colors animate-in fade-in duration-250"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              {m.foto ? (
+                                <img src={m.foto} alt={m.nama} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-slate-300 shrink-0" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-black text-sm flex items-center justify-center shrink-0">
+                                  {m.nama.charAt(0)}
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="font-extrabold text-slate-900 text-xs truncate">{m.nama}</p>
+                                <p className="text-[10px] text-teal-700 font-bold bg-teal-100/80 px-2 py-0.5 rounded-md inline-block mt-0.5">{m.jabatan}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingMemberId(m.id);
+                                  setEditMemberForm({ ...m });
+                                }}
+                                className="p-1.5 text-slate-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
+                                title="Edit Anggota Ini"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (window.confirm(`Apakah Anda yakin ingin menghapus ${m.nama} dari organisasi?`)) {
+                                    handleRemoveMemberFromExistingOrg(m.id);
+                                  }
+                                }}
+                                className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                title="Hapus Anggota Ini"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveMemberFromExistingOrg(m.id)}
-                            className="p-1.5 text-red-500 hover:bg-red-100 rounded-lg transition-colors cursor-pointer shrink-0"
-                            title="Hapus Anggota Ini"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

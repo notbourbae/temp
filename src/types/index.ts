@@ -1,6 +1,6 @@
 export type PageTab = 'beranda' | 'informasi' | 'umkm' | 'wisata' | 'budaya' | 'sda' | 'admin';
 
-export type InfoSubTab = 'profil' | 'sejarah' | 'visi-misi' | 'struktur' | 'berita';
+export type InfoSubTab = 'profil' | 'sejarah' | 'visi-misi' | 'struktur' | 'berita' | 'organisasi';
 
 export type UmkmCategory = 'Makanan dan Minuman' | 'Kerajinan' | 'Pertanian' | 'Peternakan' | 'Jasa';
 
@@ -124,6 +124,15 @@ export interface OrganisasiItem {
   lokasiAtauKantor: string;
   logoAtauFoto?: string;
   anggota?: AnggotaOrganisasi[];
+}
+
+export interface TokohDusun {
+  id: string;
+  nama: string;
+  peran: string;
+  foto: string;
+  kontak: string;
+  biodata: string;
 }
 
 export interface DusunInfo {
