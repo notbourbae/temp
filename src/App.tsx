@@ -19,6 +19,7 @@ import { BeritaDetailModal } from './components/modals/BeritaDetailModal';
 import { BudayaDetailModal } from './components/modals/BudayaDetailModal';
 import { OrganisasiDetailModal } from './components/modals/OrganisasiDetailModal';
 import { UmkmRegisterModal } from './components/modals/UmkmRegisterModal';
+import { TokohDetailModal } from './components/modals/TokohDetailModal';
 
 const MainContent: React.FC = () => {
   const { activeTab } = useDusun();
@@ -31,7 +32,7 @@ const MainContent: React.FC = () => {
       <div className="relative z-10 flex-1 flex flex-col justify-between">
         <div>
           <Navbar />
-          
+
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24 md:py-8">
             {activeTab === 'beranda' && <Home />}
             {activeTab === 'informasi' && <InformasiDusun />}
@@ -56,6 +57,7 @@ const MainContent: React.FC = () => {
       <BudayaDetailModal />
       <OrganisasiDetailModal />
       <UmkmRegisterModal />
+      <TokohDetailModal />
     </div>
   );
 };

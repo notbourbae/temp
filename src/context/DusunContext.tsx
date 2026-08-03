@@ -49,6 +49,18 @@ import {
   isSupabaseConfigured,
   supabase
 } from '../lib/supabase';
+import {
+  initialDusunInfo,
+  initialPejabat,
+  initialBerita,
+  initialUmkm,
+  initialWisata,
+  initialWisataEvents,
+  initialBudaya,
+  initialPotensiSDA,
+  initialStatistikProduksi,
+  initialTokoh
+} from '../data/initialData';
 
 const emptyDusunInfo: DusunInfo = {
   namaDusun: '',
@@ -190,6 +202,8 @@ interface DusunContextType {
   setSelectedBudayaModal: (item: BudayaItem | null) => void;
   selectedOrganisasiModal: OrganisasiItem | null;
   setSelectedOrganisasiModal: (item: OrganisasiItem | null) => void;
+  selectedTokohModal: TokohDusun | null;
+  setSelectedTokohModal: (item: TokohDusun | null) => void;
   showUmkmRegisterModal: boolean;
   setShowUmkmRegisterModal: (show: boolean) => void;
 
@@ -227,7 +241,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [organisasiList, setOrganisasiList] = useState<OrganisasiItem[]>([]);
 
-  const [tokohList, setTokohList] = useState<TokohDusun[]>([]);
+  const [tokohList, setTokohList] = useState<TokohDusun[]>(initialTokoh);
 
   const [potensiSDA, setPotensiSDA] = useState<PotensiSDA[]>([]);
 
@@ -241,11 +255,12 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedBeritaModal, setSelectedBeritaModal] = useState<BeritaItem | null>(null);
   const [selectedBudayaModal, setSelectedBudayaModal] = useState<BudayaItem | null>(null);
   const [selectedOrganisasiModal, setSelectedOrganisasiModal] = useState<OrganisasiItem | null>(null);
+  const [selectedTokohModal, setSelectedTokohModal] = useState<TokohDusun | null>(null);
   const [showUmkmRegisterModal, setShowUmkmRegisterModal] = useState(false);
   const [adminNotification, setAdminNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Admin login status disimpan di browser (status sesi, bukan konten)
-  useEffect(() => { try { localStorage.setItem('dusun_is_admin_v1', String(isAdmin)); } catch {} }, [isAdmin]);
+  useEffect(() => { try { localStorage.setItem('dusun_is_admin_v1', String(isAdmin)); } catch { } }, [isAdmin]);
 
   // Hindari auto-save statistik sebelum data selesai dimuat dari Supabase
   const hasLoadedFromSupabase = React.useRef(false);
@@ -267,6 +282,24 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // ─── Initial load from Supabase ───────────────────
   const loadFromSupabase = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) {
+      // 1) Tampilkan cache lokal dulu agar halaman langsung terisi (instan)
+      const { payload } = readDusunCache();
+      if (payload) {
+        applyAllData(payload);
+      } else {
+        // Fallback ke data awal (mock) jika tidak ada cache
+        setDusunInfo(initialDusunInfo);
+        setPejabatList(initialPejabat);
+        setBeritaList(initialBerita);
+        setUmkmList(initialUmkm);
+        setWisataList(initialWisata);
+        setWisataEvents(initialWisataEvents);
+        setBudayaList(initialBudaya);
+        setPotensiSDA(initialPotensiSDA);
+        setStatistikProduksi(initialStatistikProduksi);
+        setOrganisasiList([]);
+        setTokohList(initialTokoh);
+      }
       hasLoadedFromSupabase.current = true;
       setLoading(false);
       return;
@@ -289,6 +322,19 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (data) {
         applyAllData(data);
         writeDusunCache(data);
+      } else if (!payload) {
+        // Jika data di database kosong / tidak ada, dan tidak ada cache, gunakan fallback
+        setDusunInfo(initialDusunInfo);
+        setPejabatList(initialPejabat);
+        setBeritaList(initialBerita);
+        setUmkmList(initialUmkm);
+        setWisataList(initialWisata);
+        setWisataEvents(initialWisataEvents);
+        setBudayaList(initialBudaya);
+        setPotensiSDA(initialPotensiSDA);
+        setStatistikProduksi(initialStatistikProduksi);
+        setOrganisasiList([]);
+        setTokohList(initialTokoh);
       }
     } catch (err) {
       console.warn('Gagal sync dari Supabase:', err);
@@ -395,7 +441,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addUmkmRegistration = (data: Omit<UmkmItem, 'id' | 'status' | 'tanggalDaftar' | 'rating' | 'produk'> & { produkList?: { nama: string; harga: number; deskripsi: string; gambar: string }[] }) => {
     const today = new Date();
-    const formattedDate = `${today.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][today.getMonth()]} ${today.getFullYear()}`;
+    const formattedDate = `${today.getDate()} ${['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][today.getMonth()]} ${today.getFullYear()}`;
 
     const formattedProducts = (data.produkList || []).map((p, idx) => ({
       id: 'p_' + Date.now() + '_' + idx,
@@ -749,6 +795,8 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSelectedBudayaModal,
         selectedOrganisasiModal,
         setSelectedOrganisasiModal,
+        selectedTokohModal,
+        setSelectedTokohModal,
         showUmkmRegisterModal,
         setShowUmkmRegisterModal,
         loading,

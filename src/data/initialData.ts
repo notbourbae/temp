@@ -1,4 +1,4 @@
-import { DusunInfo, BeritaItem, UmkmItem, WisataItem, WisataEvent, PejabatDusun, PotensiSDA, StatistikProduksi, BudayaItem } from '../types';
+import { DusunInfo, BeritaItem, UmkmItem, WisataItem, WisataEvent, PejabatDusun, PotensiSDA, StatistikProduksi, BudayaItem, TokohDusun } from '../types';
 
 export const initialDusunInfo: DusunInfo = {
   namaDusun: 'Dusun Tosari',
@@ -413,3 +413,31 @@ export const initialStatistikProduksi: StatistikProduksi[] = [
   { tahun: '2025', pertanianTonton: 270, perkebunanTonton: 48, perikananTonton: 35, peternakanEkor: 350 },
   { tahun: '2026 (Est)', pertanianTonton: 290, perkebunanTonton: 52, perikananTonton: 40, peternakanEkor: 380 }
 ];
+
+export const initialTokoh: TokohDusun[] = [
+  {
+    id: 't1',
+    nama: 'Kyai Raden Hidayatullah',
+    peran: 'Perintis & Tokoh Agama (Pendiri Dusun)',
+    foto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80',
+    kontak: '-',
+    biodata: 'Kyai Raden Hidayatullah adalah tokoh sentral di balik berdirinya Dusun Tosari pada tahun 1948. Setelah masa perjuangan kemerdekaan, beliau mengumpulkan para keluarga tani untuk membuka pemukiman baru di lereng bukit yang kini berkembang menjadi Dusun Tosari. Beliau dikenal karena kebijaksanaan kepemimpinannya, memadukan hukum adat yang harmonis dengan ajaran agama, serta mempelopori gotong royong irigasi pertanian pertama.'
+  },
+  {
+    id: 't2',
+    nama: 'Aki Jayasastra',
+    peran: 'Budayawan & Sejarawan Adat',
+    foto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+    kontak: '+62 812-4455-8899',
+    biodata: 'Aki Jayasastra merupakan sesepuh adat sekaligus penjaga tradisi lisan dan sejarah silsilah Dusun Tosari. Beliau mendedikasikan hidupnya untuk mencatat babad tanah Tosari, mengumpulkan manuskrip kuno silsilah warga, serta menghidupkan kembali "Basa Sunda Lemes" dan pertunjukan seni angklung buncis. Beliau sering menjadi narasumber utama bagi para peneliti sejarah daerah.'
+  },
+  {
+    id: 't3',
+    nama: 'Ibu Warsiah',
+    peran: 'Pelopor Ekonomi & Kerajinan Bambu',
+    foto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
+    kontak: '+62 813-7766-5544',
+    biodata: 'Ibu Warsiah memelopori transformasi anyaman bambu tradisional dari sekadar perkakas dapur menjadi produk seni kerajinan bernilai ekonomi tinggi. Sejak tahun 1978, beliau mendirikan paguyuban anyaman di rumahnya, melatih ratusan pemuda dan ibu rumah tangga dusun agar memiliki penghasilan mandiri. Berkat kegigihan beliau, anyaman bambu Dusun Tosari kini menembus pasar ekspor.'
+  }
+];
+

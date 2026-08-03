@@ -18,6 +18,7 @@ import {
   Sparkles,
   Upload,
   Camera,
+  Award,
   X
 } from 'lucide-react';
 
@@ -31,7 +32,9 @@ export const InformasiDusun: React.FC = () => {
     beritaList,
     setSelectedBeritaModal,
     organisasiList,
-    setSelectedOrganisasiModal
+    setSelectedOrganisasiModal,
+    tokohList,
+    setSelectedTokohModal
   } = useDusun();
 
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -114,6 +117,17 @@ export const InformasiDusun: React.FC = () => {
         >
           <Newspaper className="w-4 h-4" />
           Berita & Pengumuman
+        </button>
+
+        <button
+          onClick={() => setActiveInfoSubTab('tokoh')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'tokoh'
+            ? 'bg-emerald-700 text-white shadow-xs'
+            : 'text-slate-600 hover:bg-slate-100'
+            }`}
+        >
+          <Award className="w-4 h-4" />
+          Tokoh / Sejarawan
         </button>
       </div>
 
@@ -489,6 +503,75 @@ export const InformasiDusun: React.FC = () => {
             </div>
           )}
 
+        </div>
+      )}
+
+      {/* SUBTAB 6: TOKOH / SEJARAWAN */}
+      {activeInfoSubTab === 'tokoh' && (
+        <div className="space-y-8 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                <Award className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Tokoh Kehormatan & Sejarawan Dusun</h2>
+                <p className="text-xs text-slate-500">Mengenal para perintis, budayawan, dan sosok inspiratif {dusunInfo.namaDusun}</p>
+              </div>
+            </div>
+
+            {tokohList.length === 0 ? (
+              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200">
+                <p className="text-slate-500 text-xs">Belum ada data tokoh kehormatan. Data akan tampil di sini setelah admin menambahkan tokoh dusun.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tokohList.map((item) => (
+                  <div key={item.id} className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-4 hover:border-emerald-300 hover:shadow-sm transition-all flex flex-col justify-between">
+                    <div className="space-y-3.5">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-emerald-600 shadow-xs shrink-0 bg-slate-100">
+                          <img
+                            src={item.foto || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80'}
+                            alt={item.nama}
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">{item.nama}</h3>
+                          <p className="text-[11px] sm:text-xs font-semibold text-emerald-700">{item.peran}</p>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-4">
+                        {item.biodata}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                      {item.kontak && item.kontak !== '-' ? (
+                        <span className="text-[10px] sm:text-xs text-slate-500 font-medium truncate max-w-[120px]">
+                          Telp: {item.kontak}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] sm:text-xs text-slate-400 italic">
+                          No Kontak -
+                        </span>
+                      )}
+
+                      <button
+                        onClick={() => setSelectedTokohModal(item)}
+                        className="inline-flex items-center gap-1.5 text-xs text-emerald-800 font-bold bg-emerald-100 hover:bg-emerald-200 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer"
+                      >
+                        Selengkapnya →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

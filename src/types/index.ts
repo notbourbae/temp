@@ -1,6 +1,6 @@
 export type PageTab = 'beranda' | 'informasi' | 'umkm' | 'wisata' | 'budaya' | 'sda' | 'admin';
 
-export type InfoSubTab = 'profil' | 'sejarah' | 'visi-misi' | 'struktur' | 'berita' | 'organisasi';
+export type InfoSubTab = 'profil' | 'sejarah' | 'visi-misi' | 'struktur' | 'berita' | 'organisasi' | 'tokoh';
 
 export type UmkmCategory = 'Makanan dan Minuman' | 'Kerajinan' | 'Pertanian' | 'Peternakan' | 'Jasa';
 
