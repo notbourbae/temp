@@ -169,6 +169,15 @@ export const Navbar: React.FC = () => {
                     >
                       • Lembaga & Organisasi
                     </button>
+                    <button
+                      onClick={() => handleNavClick('informasi', 'tokoh')}
+                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'tokoh'
+                        ? 'bg-emerald-50 text-emerald-700 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                      • Tokoh / Sejarawan
+                    </button>
                     <div className="my-1 border-t border-slate-100"></div>
                     <button
                       onClick={() => handleNavClick('informasi', 'berita')}
@@ -311,6 +320,12 @@ export const Navbar: React.FC = () => {
               className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
             >
               • Lembaga & Organisasi
+            </button>
+            <button
+              onClick={() => handleNavClick('informasi', 'tokoh')}
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
+            >
+              • Tokoh / Sejarawan
             </button>
             <button
               onClick={() => handleNavClick('informasi', 'berita')}

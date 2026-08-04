@@ -255,20 +255,20 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
     ] = await Promise.all([
       supabase.from('dusun_info').select('*').eq('id', 'main').maybeSingle(),
       supabase.from('pejabat').select('*'),
-      supabase.from('berita').select('*').order('created_at', { ascending: false }),
-      supabase.from('umkm').select('*').order('created_at', { ascending: false }),
-      supabase.from('wisata').select('*'),
-      supabase.from('wisata_events').select('*').order('created_at', { ascending: false }),
-      supabase.from('budaya').select('*'),
-      supabase.from('potensi_sda').select('*'),
-      supabase.from('statistik_produksi').select('*').order('tahun', { ascending: false })
+      supabase.from('berita').select('*').order('created_at', { ascending: false }).limit(20),
+      supabase.from('umkm').select('*').order('created_at', { ascending: false }).limit(20),
+      supabase.from('wisata').select('*').limit(20),
+      supabase.from('wisata_events').select('*').order('created_at', { ascending: false }).limit(20),
+      supabase.from('budaya').select('*').limit(20),
+      supabase.from('potensi_sda').select('*').limit(20),
+      supabase.from('statistik_produksi').select('*').order('tahun', { ascending: false }).limit(10)
     ]);
 
     // Query organisasi dipisah agar kegagalan (mis. tabel belum dibuat)
     // tidak membatalkan seluruh sync data lainnya.
     let organisasiRes: any[] | null = null;
     try {
-      const res = await supabase.from('organisasi').select('*');
+      const res = await supabase.from('organisasi').select('*').limit(20);
       organisasiRes = res.data;
     } catch (err) {
       console.warn('Gagal sync organisasi (tabel mungkin belum dibuat):', err);
@@ -276,7 +276,7 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
 
     let tokohRes: any[] | null = null;
     try {
-      const res = await supabase.from('tokoh').select('*');
+      const res = await supabase.from('tokoh').select('*').limit(20);
       tokohRes = res.data;
     } catch (err) {
       console.warn('Gagal sync tokoh (tabel mungkin belum dibuat):', err);

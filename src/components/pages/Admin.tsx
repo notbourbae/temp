@@ -893,41 +893,6 @@ export const Admin: React.FC = () => {
       {adminTab === 'informasi' && (
         <div className="space-y-6 text-xs text-slate-800 animate-in fade-in duration-200">
 
-          {/* Live Preview Bar - Matching Home Page Statistics */}
-          <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white p-5 sm:p-6 rounded-3xl shadow-lg space-y-4">
-            <div className="flex items-center justify-between border-b border-emerald-800/80 pb-3">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white">Live Preview Statistik Beranda Dusun</h3>
-              </div>
-              <span className="text-[11px] bg-emerald-800/60 text-emerald-200 px-2.5 py-0.5 rounded-full font-semibold">
-                Perubahan Otomatis Terlihat di Beranda
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                  <Users className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-white">{dusunInfo.jumlahPenduduk.toLocaleString('id-ID')}</p>
-                  <p className="text-xs text-emerald-200 font-medium">Jiwa Penduduk ({dusunInfo.jumlahKK} KK)</p>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center shrink-0">
-                  <Map className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-white">{dusunInfo.luasWilayah || '0 Hektar'}</p>
-                  <p className="text-xs text-teal-200 font-medium">Luas Wilayah Dusun</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Form 1: Data Demografi & Stat Dusun */}
           <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4 shadow-xs">
             <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
@@ -1189,30 +1154,6 @@ export const Admin: React.FC = () => {
               onChange={val => setDusunInfo({ ...dusunInfo, sambutanFoto: val })}
               placeholder="https://images.unsplash.com/..."
             />
-
-            {/* Live Preview Card */}
-            <div className="bg-gradient-to-br from-emerald-950 to-slate-900 text-white p-5 rounded-2xl border border-emerald-800/80 space-y-3 mt-4">
-              <div className="flex items-center justify-between border-b border-emerald-800/60 pb-2">
-                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-emerald-400">
-                  Pratinjau Langsung (Beranda)
-                </span>
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md">
-                  Tampilan Publik
-                </span>
-              </div>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <img
-                  src={dusunInfo.sambutanFoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80"}
-                  alt="Preview Foto Sambutan"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-emerald-400 shadow-md shrink-0"
-                />
-                <div className="space-y-1 text-center sm:text-left">
-                  <h4 className="font-bold text-sm text-emerald-100">{dusunInfo.sambutanJudul || 'Judul Sambutan'}</h4>
-                  <p className="text-[11px] text-slate-300 line-clamp-2">{dusunInfo.sambutanIsi}</p>
-                  <p className="text-[10px] text-emerald-400 font-bold pt-1">— {dusunInfo.kepalaDusun} ({dusunInfo.sambutanJabatan || 'Kepala Dusun'})</p>
-                </div>
-              </div>
-            </div>
           </div>
 
 
@@ -2534,42 +2475,6 @@ export const Admin: React.FC = () => {
             )}
           </div>
 
-          {/* Live Preview Tampilan Kalender Wisata */}
-          <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 border border-slate-800 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">Live Preview: Tampilan Halaman Wisata</h3>
-                  <p className="text-xs text-teal-300">Kalender Kegiatan & Festival Wisata Dusun Tosari</p>
-                </div>
-              </div>
-              <span className="text-[11px] bg-teal-900 text-teal-200 px-3 py-1 rounded-full font-semibold">
-                Pratinjau Publik
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {wisataEvents.map((ev) => (
-                <div key={ev.id} className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2">
-                  <span className="inline-block bg-teal-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
-                    {ev.kategori}
-                  </span>
-                  <h4 className="font-bold text-white text-sm">{ev.judul}</h4>
-                  <p className="text-xs text-slate-300 flex items-center gap-1.5 pt-1">
-                    <Calendar className="w-3.5 h-3.5 text-teal-400" /> {ev.tanggal}
-                  </p>
-                  <p className="text-xs text-slate-300 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-teal-400" /> {ev.lokasi}
-                  </p>
-                  <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-700">{ev.deskripsi}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       )}
 
@@ -2848,39 +2753,6 @@ export const Admin: React.FC = () => {
             )}
           </div>
 
-          {/* Live Preview Halaman Budaya */}
-          <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 border border-slate-800 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white">
-                  <Landmark className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">Live Preview: Tampilan Halaman Budaya</h3>
-                  <p className="text-xs text-amber-300">Warisan Budaya & Tradisi Dusun Tosari</p>
-                </div>
-              </div>
-              <span className="text-[11px] bg-amber-950 text-amber-300 px-3 py-1 rounded-full font-semibold">
-                Pratinjau Publik
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {budayaList.map((item) => (
-                <div key={item.id} className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2">
-                  <span className="inline-block bg-amber-600 text-white font-bold text-[10px] px-2 py-0.5 rounded-md">
-                    {item.kategori}
-                  </span>
-                  <h4 className="font-bold text-white text-sm">{item.nama}</h4>
-                  <p className="text-[11px] text-slate-300 line-clamp-2">{item.deskripsi}</p>
-                  <p className="text-[10px] text-amber-400 font-medium flex items-center gap-1 pt-1">
-                    <MapPin className="w-3 h-3 text-amber-400" /> {item.lokasi}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       )}
 
@@ -3001,7 +2873,7 @@ export const Admin: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-end bg-white p-3.5 rounded-xl border border-teal-100 shadow-2xs">
-                  <div className="space-y-1 md:col-span-3">
+                  <div className="space-y-1 md:col-span-6">
                     <label className="text-[11px] font-bold text-slate-700">Nama Anggota</label>
                     <input
                       type="text"
@@ -3012,7 +2884,7 @@ export const Admin: React.FC = () => {
                     />
                   </div>
 
-                  <div className="space-y-1 md:col-span-3">
+                  <div className="space-y-1 md:col-span-5">
                     <label className="text-[11px] font-bold text-slate-700">Jabatan / Posisi</label>
                     <input
                       type="text"
@@ -3021,34 +2893,6 @@ export const Admin: React.FC = () => {
                       placeholder="Ketua / Sekretaris / Anggota..."
                       className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium"
                     />
-                  </div>
-
-                  <div className="space-y-1 md:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-700">No. WhatsApp / Kontak</label>
-                    <input
-                      type="text"
-                      value={newMemKontak}
-                      onChange={(e) => setNewMemKontak(e.target.value)}
-                      placeholder="62812345678..."
-                      className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium"
-                    />
-                  </div>
-
-                  <div className="space-y-1 md:col-span-3">
-                    <label className="text-[11px] font-bold text-slate-700">Foto Anggota (Upload/URL)</label>
-                    <div className="flex gap-1">
-                      <input
-                        type="text"
-                        value={newMemFoto}
-                        onChange={(e) => setNewMemFoto(e.target.value)}
-                        placeholder="URL atau Upload..."
-                        className="w-full p-2 rounded-lg border border-slate-200 text-xs font-medium flex-1 min-w-0"
-                      />
-                      <ImageUploader
-                        onImageUploaded={(url) => setNewMemFoto(url)}
-                        label="Unggah"
-                      />
-                    </div>
                   </div>
 
                   <div className="md:col-span-1 flex justify-end">
@@ -3157,34 +3001,6 @@ export const Admin: React.FC = () => {
                         className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
                       />
                     </div>
-
-                    <div className="space-y-1">
-                      <label className="font-bold text-slate-700 text-[11px]">No. WhatsApp Kontak</label>
-                      <input
-                        type="text"
-                        value={modalMemKontak}
-                        onChange={(e) => setModalMemKontak(e.target.value)}
-                        placeholder="628123456789..."
-                        className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="font-bold text-slate-700 text-[11px]">Foto Anggota (URL atau Upload)</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={modalMemFoto}
-                          onChange={(e) => setModalMemFoto(e.target.value)}
-                          placeholder="https://..."
-                          className="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs font-medium"
-                        />
-                        <ImageUploader
-                          onImageUploaded={(url) => setModalMemFoto(url)}
-                          label="Foto"
-                        />
-                      </div>
-                    </div>
                   </div>
 
                   <div className="flex justify-end pt-1">
@@ -3256,32 +3072,6 @@ export const Admin: React.FC = () => {
                                     onChange={(e) => setEditMemberForm({ ...editMemberForm, jabatan: e.target.value })}
                                     className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
                                   />
-                                </div>
-
-                                <div className="space-y-1">
-                                  <label className="text-[10px] font-bold text-slate-700">No. WhatsApp</label>
-                                  <input
-                                    type="text"
-                                    value={editMemberForm.kontak}
-                                    onChange={(e) => setEditMemberForm({ ...editMemberForm, kontak: e.target.value })}
-                                    className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
-                                  />
-                                </div>
-
-                                <div className="space-y-1">
-                                  <label className="text-[10px] font-bold text-slate-700">Foto (URL / Upload)</label>
-                                  <div className="flex gap-2">
-                                    <input
-                                      type="text"
-                                      value={editMemberForm.foto}
-                                      onChange={(e) => setEditMemberForm({ ...editMemberForm, foto: e.target.value })}
-                                      className="w-full p-2 bg-white rounded-lg border border-slate-200 text-xs font-semibold focus:ring-1 focus:ring-amber-500"
-                                    />
-                                    <ImageUploader
-                                      onImageUploaded={(url) => setEditMemberForm({ ...editMemberForm, foto: url })}
-                                      label="Foto"
-                                    />
-                                  </div>
                                 </div>
                               </div>
 
@@ -3560,44 +3350,6 @@ export const Admin: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Live Preview Organisasi */}
-          <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 border border-slate-800 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">Live Preview: Halaman Lembaga & Organisasi</h3>
-                  <p className="text-xs text-teal-300">Tampilan Publik Pada Tab Informasi Dusun</p>
-                </div>
-              </div>
-              <span className="text-[11px] bg-teal-950 text-teal-300 px-3 py-1 rounded-full font-semibold">
-                Pratinjau Publik
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {organisasiList.map((item) => (
-                <div key={item.id} className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-block bg-teal-600 text-white font-bold text-[10px] px-2 py-0.5 rounded-md">
-                      {item.kategori}
-                    </span>
-                    <span className="text-[10px] text-slate-400">{item.jumlahAnggota}</span>
-                  </div>
-                  <h4 className="font-bold text-white text-sm">{item.nama}</h4>
-                  <p className="text-[11px] text-slate-300 line-clamp-2">{item.deskripsi}</p>
-                  {item.ketua && (
-                    <p className="text-[10px] text-teal-400 font-medium pt-1">
-                      Ketua: {item.ketua}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
 
         </div>

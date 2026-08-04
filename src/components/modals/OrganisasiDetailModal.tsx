@@ -74,34 +74,25 @@ export const OrganisasiDetailModal: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {anggota.map((m) => (
-                  <div key={m.id} className="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-teal-600 shadow-sm shrink-0 bg-slate-200">
-                      <img
-                        src={m.foto}
-                        alt={m.nama}
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                      />
+                {anggota.map((m) => {
+                  const isKetua = m.jabatan.toLowerCase().includes('ketua');
+                  return (
+                    <div key={m.id} className="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-center min-h-[72px]">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{m.nama}</h4>
+                        <p className="text-[11px] font-semibold text-teal-700 mt-0.5">{m.jabatan}</p>
+                        {isKetua && m.kontak && (
+                          <div className="mt-2 text-xs text-slate-600 flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                            <span className="font-medium text-slate-700">
+                              No. HP/WA: <span className="font-bold text-teal-800">{m.kontak}</span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-slate-900 text-sm truncate">{m.nama}</h4>
-                      <p className="text-[11px] font-semibold text-teal-700 mt-0.5">{m.jabatan}</p>
-                      {m.kontak && (
-                        <a
-                          href={`https://wa.me/${m.kontak.replace(/[^0-9]/g, '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] text-emerald-800 font-bold bg-emerald-100 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-colors mt-1.5"
-                        >
-                          <Phone className="w-3 h-3" /> Kontak
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
