@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDusun } from '../../context/DusunContext';
 import {
   ShieldCheck,
@@ -20,22 +20,74 @@ import {
   AlertCircle,
   Save,
   Phone,
-  Map,
   MapPin,
-  Copy,
-  Check,
-  Mail,
   Calendar,
   Sparkles,
   Quote,
   Landmark,
   UserPlus,
-  UserMinus,
-  UserCheck,
   Award
 } from 'lucide-react';
 import { BeritaItem, UmkmItem, WisataItem, WisataEvent, PotensiSDA, PejabatDusun, BudayaItem, OrganisasiItem, AnggotaOrganisasi, TokohDusun } from '../../types';
 import { ImageUploader } from '../ImageUploader';
+
+interface AdminPaginationProps {
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+}
+
+const AdminPagination: React.FC<AdminPaginationProps> = ({
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  onPageChange
+}) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  if (totalPages <= 1) return null;
+
+  const startIdx = (currentPage - 1) * itemsPerPage + 1;
+  const endIdx = Math.min(currentPage * itemsPerPage, totalItems);
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-100 text-xs mt-4">
+      <p className="text-slate-500 font-medium">
+        Menampilkan <span className="font-bold text-slate-800">{startIdx}</span> -{' '}
+        <span className="font-bold text-slate-800">{endIdx}</span> dari{' '}
+        <span className="font-bold text-slate-800">{totalItems}</span> data
+      </p>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
+        >
+          Sebelumnya
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`w-9 h-9 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center ${currentPage === page
+                ? 'bg-emerald-800 text-white shadow-xs'
+                : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent transition-colors cursor-pointer"
+        >
+          Selanjutnya
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const Admin: React.FC = () => {
   const {
@@ -54,7 +106,6 @@ export const Admin: React.FC = () => {
     updateBerita,
     deleteBerita,
     umkmList,
-    addUmkmRegistration,
     approveUmkm,
     rejectUmkm,
     updateUmkm,
@@ -90,6 +141,23 @@ export const Admin: React.FC = () => {
   const [passcode, setPasscode] = useState('');
   const [loginError, setLoginError] = useState(false);
   const [adminTab, setAdminTab] = useState<'dashboard' | 'informasi' | 'struktur' | 'tokoh' | 'berita' | 'umkm' | 'wisata' | 'sda' | 'agenda' | 'budaya' | 'organisasi' | 'pengguna'>('dashboard');
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [adminTab]);
+
+  function getPaginatedList<T>(list: T[], itemsPerPage: number): T[] {
+    const totalPages = Math.ceil(list.length / itemsPerPage);
+    const activePage = currentPage > totalPages ? Math.max(1, totalPages) : currentPage;
+    return list.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+  }
+
+  const getSafePage = (listLength: number, itemsPerPage: number): number => {
+    const totalPages = Math.ceil(listLength / itemsPerPage);
+    return currentPage > totalPages ? Math.max(1, totalPages) : currentPage;
+  };
 
   // New Tokoh Form State
   const [newTokohNama, setNewTokohNama] = useState('');
@@ -349,7 +417,6 @@ export const Admin: React.FC = () => {
       deleteBudaya(id);
     }
   };
-  const [copiedSql, setCopiedSql] = useState(false);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
 
   // Pejabat Form State
@@ -628,45 +695,49 @@ export const Admin: React.FC = () => {
   // LOGIN SCREEN FOR UNAUTHENTICATED USERS
   if (!isAdmin) {
     return (
-      <div id="admin-login-view" className="max-w-md mx-auto my-12 bg-white rounded-3xl p-8 border border-slate-200 shadow-xl text-center space-y-6">
-        <div className="w-16 h-16 bg-slate-900 text-amber-400 rounded-2xl flex items-center justify-center mx-auto shadow-md">
-          <ShieldCheck className="w-8 h-8" />
-        </div>
+      <div id="admin-login-view" className="max-w-md mx-auto my-16 bg-white/95 backdrop-blur-xl rounded-3xl p-8 border border-slate-200/80 shadow-2xl text-center space-y-6 relative overflow-hidden">
+        {/* Decorative subtle background glows */}
+        <div className="absolute -top-12 -right-12 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -bottom-12 -left-12 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div>
-          <h2 className="text-2xl font-extrabold text-slate-900">Masuk Administrator Dusun</h2>
-          <p className="text-xs text-slate-500 mt-1">Masukkan kata sandi pengelola untuk mengedit konten website.</p>
-        </div>
+        <div className="relative z-10 space-y-3">
+          <div className="w-16 h-16 bg-gradient-to-tr from-emerald-600 to-teal-850 text-white rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-700/10 transform hover:scale-105 transition-transform duration-300">
+            <ShieldCheck className="w-8 h-8 text-amber-300" />
+          </div>
 
-        <form onSubmit={handleLoginSubmit} className="space-y-4 text-left">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Kata Sandi Administrator</label>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Kawasan Administrator</h2>
+            <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">Masukkan kata sandi pengelola untuk mengedit seluruh konten situs informasi publik Dusun Tosari.</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleLoginSubmit} className="space-y-4 text-left relative z-10">
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-slate-700 tracking-wider uppercase">Kata Sandi Pengelola</label>
             <div className="relative">
               <input
                 type="password"
                 placeholder="Masukkan kata sandi"
                 value={passcode}
                 onChange={e => setPasscode(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs focus:ring-2 focus:ring-emerald-500 font-mono"
+                className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-emerald-600 rounded-xl pl-10 pr-3 py-3 text-xs focus:ring-2 focus:ring-emerald-500/20 font-mono transition-all duration-200 outline-none"
               />
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
             </div>
             {loginError && (
-              <p className="text-[11px] text-red-500 mt-1 font-semibold flex items-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" /> Kata sandi salah Silakan coba lagi.
+              <p className="text-[11px] text-red-600 mt-1.5 font-bold flex items-center gap-1.5 animate-bounce">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" /> Kata sandi salah. Silakan coba lagi.
               </p>
             )}
           </div>
 
           <button
             type="submit"
-            className="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-bold py-3 rounded-xl text-xs transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-bold py-3.5 rounded-xl text-xs transition-all duration-300 shadow-md shadow-emerald-900/10 cursor-pointer flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4" /> Masuk Panel Administrator
           </button>
         </form>
-
-
       </div>
     );
   }
@@ -676,20 +747,24 @@ export const Admin: React.FC = () => {
     <div id="page-admin" className="space-y-8 animate-in fade-in duration-300">
 
       {/* Top Header Bar */}
-      <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-md">
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800 relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/10">
             <ShieldCheck className="w-7 h-7" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Panel Kelola Administrator Dusun</h2>
-            <p className="text-xs text-amber-400">Status: Sesi Administrator Aktif</p>
+            <h2 className="text-lg font-black tracking-tight text-white sm:text-xl">Panel Kelola Administrator Dusun</h2>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <p className="text-xs text-emerald-400 font-semibold">Sesi Administrator Aktif</p>
+            </div>
           </div>
         </div>
 
         <button
           onClick={() => setIsAdmin(false)}
-          className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-red-950 hover:text-red-300 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold transition-colors border border-slate-700 cursor-pointer"
+          className="inline-flex items-center gap-1.5 bg-slate-850 hover:bg-red-950 hover:text-red-300 text-slate-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 border border-slate-700 cursor-pointer hover:border-red-900/50"
         >
           <LogOut className="w-4 h-4" /> Keluar Admin
         </button>
@@ -706,145 +781,240 @@ export const Admin: React.FC = () => {
       )}
 
       {/* Admin Navigation Tabs */}
-      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1 overflow-x-auto">
+      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5 overflow-x-auto">
         <button
           onClick={() => setAdminTab('dashboard')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'dashboard' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'dashboard'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <LayoutDashboard className="w-4 h-4" />
+          <LayoutDashboard className="w-4 h-4 shrink-0" />
           Dashboard
         </button>
 
         <button
           onClick={() => setAdminTab('informasi')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'informasi' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'informasi'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Info className="w-4 h-4" />
-          Kelola Profil & Demografi
+          <Info className="w-4 h-4 shrink-0" />
+          Profil & Demografi
         </button>
 
         <button
           onClick={() => setAdminTab('struktur')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'struktur' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'struktur'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Building className="w-4 h-4" />
-          Kelola Struktur Pemerintahan ({pejabatList.length})
+          <Building className="w-4 h-4 shrink-0" />
+          Struktur Pemerintahan ({pejabatList.length})
         </button>
 
         <button
           onClick={() => setAdminTab('tokoh')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'tokoh' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'tokoh'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Award className="w-4 h-4" />
-          Kelola Tokoh ({tokohList.length})
+          <Award className="w-4 h-4 shrink-0" />
+          Tokoh ({tokohList.length})
         </button>
 
         <button
           onClick={() => setAdminTab('berita')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'berita' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'berita'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Newspaper className="w-4 h-4" />
-          Kelola Berita ({beritaList.length})
+          <Newspaper className="w-4 h-4 shrink-0" />
+          Berita ({beritaList.length})
         </button>
 
         <button
           onClick={() => setAdminTab('umkm')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'umkm' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'umkm'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Store className="w-4 h-4" />
-          Kelola UMKM {pendingUmkm.length > 0 && <span className="bg-amber-500 text-slate-950 font-black text-[10px] px-1.5 py-0.2 rounded-full">{pendingUmkm.length}</span>}
+          <Store className="w-4 h-4 shrink-0" />
+          UMKM {pendingUmkm.length > 0 && <span className="bg-amber-500 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded-full ml-1">{pendingUmkm.length}</span>}
         </button>
 
         <button
           onClick={() => setAdminTab('wisata')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'wisata' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'wisata'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Compass className="w-4 h-4" />
-          Kelola Wisata ({wisataList.length})
+          <Compass className="w-4 h-4 shrink-0" />
+          Wisata ({wisataList.length})
         </button>
 
         <button
           onClick={() => setAdminTab('agenda')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'agenda' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'agenda'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Calendar className="w-4 h-4" />
-          Kelola Kalender Agenda ({wisataEvents.length})
+          <Calendar className="w-4 h-4 shrink-0" />
+          Agenda ({wisataEvents.length})
         </button>
 
         <button
           onClick={() => setAdminTab('sda')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'sda' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'sda'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Trees className="w-4 h-4" />
-          Kelola Potensi SDA ({potensiSDA.length})
+          <Trees className="w-4 h-4 shrink-0" />
+          SDA ({potensiSDA.length})
         </button>
 
         <button
           onClick={() => setAdminTab('budaya')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'budaya' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'budaya'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Landmark className="w-4 h-4" />
-          Kelola Budaya ({budayaList.length})
+          <Landmark className="w-4 h-4 shrink-0" />
+          Budaya ({budayaList.length})
         </button>
 
         <button
           onClick={() => setAdminTab('organisasi')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'organisasi' ? 'bg-slate-900 text-amber-400' : 'text-slate-700 hover:bg-slate-100'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'organisasi'
+              ? 'bg-emerald-800 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
-          <Users className="w-4 h-4" />
-          Kelola Organisasi ({organisasiList.length})
+          <Users className="w-4 h-4 shrink-0" />
+          Organisasi ({organisasiList.length})
         </button>
       </div>
 
       {/* ADMIN TAB 1: DASHBOARD STATS OVERVIEW */}
       {adminTab === 'dashboard' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Total Berita / Pengumuman</p>
-              <p className="text-3xl font-black text-slate-900">{beritaList.length}</p>
+        <div className="space-y-6 animate-in fade-in duration-350">
+
+          {/* Welcome Banner */}
+          <div className="relative bg-gradient-to-r from-emerald-800 to-teal-950 rounded-3xl p-6 sm:p-8 text-white overflow-hidden shadow-lg border border-emerald-700/30">
+            <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-12 translate-y-12">
+              <ShieldCheck className="w-80 h-80 text-emerald-300" />
+            </div>
+            <div className="relative z-10 max-w-2xl space-y-2">
+              <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-[10px] font-bold border border-emerald-400/20 tracking-wider uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Ringkasan Dashboard</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black tracking-tight">Selamat Datang Kembali, Pengelola Dusun!</h3>
+              <p className="text-xs text-emerald-100/90 leading-relaxed max-w-xl">
+                Panel ini adalah pusat kendali untuk memperbarui seluruh informasi publik Dusun Tosari. Anda dapat mengelola data profil, kepengurusan lembaga, berita kegiatan, pendaftaran UMKM warga, dan potensi lokal secara real-time.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            {/* 1. Berita */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-indigo-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Total Berita</span>
+                <div className="p-2 bg-indigo-50 text-indigo-700 rounded-xl">
+                  <Newspaper className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-slate-900 leading-none">{beritaList.length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Rilis pengumuman aktif</span>
+              </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Pendaftaran UMKM Menunggu</p>
-              <p className="text-3xl font-black text-amber-600">{pendingUmkm.length}</p>
+            {/* 2. Pending UMKM */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-amber-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Pending UMKM</span>
+                <div className="p-2 bg-amber-50 text-amber-700 rounded-xl relative">
+                  <Store className="w-4 h-4" />
+                  {pendingUmkm.length > 0 && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>}
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-amber-600 leading-none">{pendingUmkm.length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Menunggu verifikasi</span>
+              </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Total UMKM Aktif Disetujui</p>
-              <p className="text-3xl font-black text-emerald-600">{umkmList.filter(u => u.status === 'disetujui').length}</p>
+            {/* 3. Approved UMKM */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-emerald-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">UMKM Disetujui</span>
+                <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl">
+                  <CheckCircle className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-emerald-600 leading-none">{umkmList.filter(u => u.status === 'disetujui').length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Sektor UMKM terdaftar</span>
+              </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Destinasi Wisata Terdata</p>
-              <p className="text-3xl font-black text-blue-600">{wisataList.length}</p>
+            {/* 4. Wisata */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-blue-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Destinasi Wisata</span>
+                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
+                  <Compass className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-blue-600 leading-none">{wisataList.length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Destinasi wisata lokal</span>
+              </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Lembaga & Organisasi</p>
-              <p className="text-3xl font-black text-teal-600">{organisasiList.length}</p>
+            {/* 5. Organisasi */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-teal-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Lembaga/Org</span>
+                <div className="p-2 bg-teal-50 text-teal-700 rounded-xl">
+                  <Users className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-teal-600 leading-none">{organisasiList.length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Organisasi aktif</span>
+              </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <p className="text-xs text-slate-500 font-medium">Tokoh & Sejarawan</p>
-              <p className="text-3xl font-black text-amber-600">{tokohList.length}</p>
+            {/* 6. Tokoh */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-violet-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Tokoh Masyarakat</span>
+                <div className="p-2 bg-violet-50 text-violet-700 rounded-xl">
+                  <Award className="w-4 h-4" />
+                </div>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-violet-600 leading-none">{tokohList.length}</p>
+                <span className="text-[10px] text-slate-400 mt-1 block">Sejarah & tokoh</span>
+              </div>
             </div>
           </div>
 
           {/* Pending UMKM alert section */}
           {pendingUmkm.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 p-6 rounded-2xl space-y-4">
+            <div className="bg-amber-50/55 border border-amber-200/70 p-6 rounded-2xl space-y-4">
               <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
                 <AlertCircle className="w-5 h-5 text-amber-600" />
                 <span>Ada {pendingUmkm.length} Pendaftaran UMKM Baru Perlu Persetujuan</span>
@@ -877,15 +1047,6 @@ export const Admin: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 text-xs text-slate-600 leading-relaxed space-y-4">
-            <div>
-              <h4 className="font-bold text-slate-900 text-sm mb-2">Petunjuk Penggunaan Panel Admin:</h4>
-              <ul className="list-disc pl-5 space-y-1 text-slate-600">
-                <li>Pilih menu tab di atas untuk mengelola modul informasi, struktur pemerintahan, berita, UMKM, wisata, dan potensi alam.</li>
-                <li>Setiap perubahan yang Anda simpan akan tersimpan secara instan di penyimpanan browser.</li>
-              </ul>
-            </div>
-          </div>
         </div>
       )}
 
@@ -1267,7 +1428,7 @@ export const Admin: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pejabatList.map((p) => {
+              {getPaginatedList<PejabatDusun>(pejabatList, 6).map((p) => {
                 const isEditing = editingPejabatId === p.id && editPejabatForm !== null;
 
                 if (isEditing && editPejabatForm) {
@@ -1394,6 +1555,12 @@ export const Admin: React.FC = () => {
                 );
               })}
             </div>
+            <AdminPagination
+              currentPage={getSafePage(pejabatList.length, 6)}
+              totalItems={pejabatList.length}
+              itemsPerPage={6}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
         </div>
@@ -1486,7 +1653,7 @@ export const Admin: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tokohList.map((t) => {
+              {getPaginatedList<TokohDusun>(tokohList, 6).map((t) => {
                 const isEditing = editingTokohId === t.id && editTokohForm !== null;
 
                 if (isEditing && editTokohForm) {
@@ -1616,6 +1783,12 @@ export const Admin: React.FC = () => {
                 );
               })}
             </div>
+            <AdminPagination
+              currentPage={getSafePage(tokohList.length, 6)}
+              totalItems={tokohList.length}
+              itemsPerPage={6}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
         </div>
@@ -1699,7 +1872,7 @@ export const Admin: React.FC = () => {
           <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
             <h3 className="text-base font-bold text-slate-900">Daftar Berita & Pengumuman Active</h3>
             <div className="space-y-3">
-              {beritaList.map(b => (
+              {getPaginatedList<BeritaItem>(beritaList, 5).map(b => (
                 <div key={b.id}>
                   {editingBeritaId === b.id && editBeritaForm ? (
                     <form onSubmit={handleSaveEditBerita} className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-3">
@@ -1753,6 +1926,12 @@ export const Admin: React.FC = () => {
                 </div>
               ))}
             </div>
+            <AdminPagination
+              currentPage={getSafePage(beritaList.length, 5)}
+              totalItems={beritaList.length}
+              itemsPerPage={5}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       )}
@@ -1762,7 +1941,7 @@ export const Admin: React.FC = () => {
         <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-6 text-xs">
           <h3 className="text-base font-bold text-slate-900">Daftar Seluruh UMKM ({umkmList.length})</h3>
           <div className="space-y-3">
-            {umkmList.map(u => (
+            {getPaginatedList<UmkmItem>(umkmList, 5).map(u => (
               <div key={u.id}>
                 {editingUmkmId === u.id && editUmkmForm ? (
                   <form onSubmit={handleSaveEditUmkm} className="p-4 bg-amber-50 rounded-xl border border-amber-200 space-y-3">
@@ -1837,6 +2016,12 @@ export const Admin: React.FC = () => {
               </div>
             ))}
           </div>
+          <AdminPagination
+            currentPage={getSafePage(umkmList.length, 5)}
+            totalItems={umkmList.length}
+            itemsPerPage={5}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 
@@ -1949,7 +2134,7 @@ export const Admin: React.FC = () => {
 
           <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
             <h3 className="text-base font-bold text-slate-900">Daftar Tempat Wisata Active</h3>
-            {wisataList.map(w => (
+            {getPaginatedList<WisataItem>(wisataList, 5).map(w => (
               <div key={w.id}>
                 {editingWisataId === w.id && editWisataForm ? (
                   <form onSubmit={handleSaveEditWisata} className="p-4 bg-teal-50 rounded-xl border border-teal-200 space-y-3">
@@ -2072,6 +2257,12 @@ export const Admin: React.FC = () => {
               </div>
             ))}
           </div>
+          <AdminPagination
+            currentPage={getSafePage(wisataList.length, 5)}
+            totalItems={wisataList.length}
+            itemsPerPage={5}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 
@@ -2161,7 +2352,7 @@ export const Admin: React.FC = () => {
 
           <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-3">
             <h3 className="text-base font-bold text-slate-900">Daftar Potensi SDA Terdata ({potensiSDA.length})</h3>
-            {potensiSDA.map(sda => (
+            {getPaginatedList<PotensiSDA>(potensiSDA, 5).map(sda => (
               <div key={sda.id}>
                 {editingSdaId === sda.id && editSdaForm ? (
                   <form onSubmit={handleSaveEditSda} className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-3">
@@ -2221,6 +2412,12 @@ export const Admin: React.FC = () => {
               </div>
             ))}
           </div>
+          <AdminPagination
+            currentPage={getSafePage(potensiSDA.length, 5)}
+            totalItems={potensiSDA.length}
+            itemsPerPage={5}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
 
@@ -2705,7 +2902,7 @@ export const Admin: React.FC = () => {
               <p className="text-slate-500 text-center py-6">Belum ada data budaya terdaftar.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {budayaList.map((item) => (
+                {getPaginatedList<BudayaItem>(budayaList, 6).map((item) => (
                   <div key={item.id} className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between shadow-xs">
                     <div className="relative h-40 bg-slate-200 overflow-hidden">
                       <img
@@ -2750,6 +2947,14 @@ export const Admin: React.FC = () => {
                   </div>
                 ))}
               </div>
+            )}
+            {budayaList.length > 0 && (
+              <AdminPagination
+                currentPage={getSafePage(budayaList.length, 6)}
+                totalItems={budayaList.length}
+                itemsPerPage={6}
+                onPageChange={setCurrentPage}
+              />
             )}
           </div>
 
@@ -3289,7 +3494,7 @@ export const Admin: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {organisasiList.map((item) => (
+                {getPaginatedList<OrganisasiItem>(organisasiList, 6).map((item) => (
                   <div
                     key={item.id}
                     className="bg-slate-50/80 rounded-2xl border border-slate-200 p-5 space-y-3 flex flex-col justify-between hover:border-teal-300 transition-all shadow-2xs"
@@ -3349,6 +3554,14 @@ export const Admin: React.FC = () => {
                   </div>
                 ))}
               </div>
+            )}
+            {organisasiList.length > 0 && (
+              <AdminPagination
+                currentPage={getSafePage(organisasiList.length, 6)}
+                totalItems={organisasiList.length}
+                itemsPerPage={6}
+                onPageChange={setCurrentPage}
+              />
             )}
           </div>
 

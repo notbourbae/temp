@@ -17,16 +17,6 @@ import {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-console.log('[Supabase Debug] VITE_SUPABASE_URL:', JSON.stringify(supabaseUrl));
-console.log('[Supabase Debug] VITE_SUPABASE_ANON_KEY length:', supabaseAnonKey.length);
-console.log('[Supabase Debug] Check YOUR_SUPABASE_URL:', supabaseUrl === 'YOUR_SUPABASE_URL');
-console.log('[Supabase Debug] isSupabaseConfigured:', Boolean(
-  supabaseUrl &&
-  supabaseAnonKey &&
-  supabaseUrl !== 'YOUR_SUPABASE_URL' &&
-  supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY'
-));
-
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
   supabaseAnonKey &&
@@ -307,18 +297,6 @@ export async function syncAllFromSupabase(): Promise<AllDusunData | null> {
 // ──────────────────────────────────────────────────
 // DUSUN INFO
 // ──────────────────────────────────────────────────
-
-export async function syncDusunInfoFromSupabase(): Promise<DusunInfo | null> {
-  if (!supabase) return null;
-  try {
-    const { data, error } = await supabase.from('dusun_info').select('*').eq('id', 'main').single();
-    if (error || !data) return null;
-    return mapDusunInfo(data);
-  } catch (err) {
-    console.error('Error sync dusun_info:', err);
-    return null;
-  }
-}
 
 export async function saveDusunInfoToSupabase(info: DusunInfo) {
   if (!supabase) return;

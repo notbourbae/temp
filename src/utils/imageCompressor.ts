@@ -34,7 +34,7 @@ export function formatFileSize(bytes: number): string {
  */
 export async function compressImageUnder1MB(
     file: File,
-    maxSizeBytes: number = 1024 * 1024 // 1 MB
+    maxSizeBytes: number = 250 * 1024 // 250 KB default (Highly optimized for Supabase Egress)
 ): Promise<CompressionResult> {
     const originalSize = file.size;
 
@@ -115,10 +115,11 @@ export async function compressImageUnder1MB(
                     scale -= 0.15;
                 }
 
+                const limitText = `(< ${formatFileSize(maxSizeBytes)})`;
                 const infoText =
                     originalSize > currentSize
-                        ? `Terkompresi dari ${formatFileSize(originalSize)} menjadi ${formatFileSize(currentSize)} (< 1MB)`
-                        : `Ukuran gambar: ${formatFileSize(currentSize)} (< 1MB)`;
+                        ? `Terkompresi dari ${formatFileSize(originalSize)} menjadi ${formatFileSize(currentSize)} ${limitText}`
+                        : `Ukuran gambar: ${formatFileSize(currentSize)} ${limitText}`;
 
                 resolve({
                     dataUrl,

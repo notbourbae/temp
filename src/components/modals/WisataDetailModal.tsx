@@ -3,7 +3,7 @@ import { useDusun } from '../../context/DusunContext';
 import { X, MapPin, Clock, Ticket, Phone, ExternalLink, Compass, CheckCircle2 } from 'lucide-react';
 
 export const WisataDetailModal: React.FC = () => {
-  const { selectedWisataModal, setSelectedWisataModal, toggleFavoriteWisata } = useDusun();
+  const { selectedWisataModal, setSelectedWisataModal } = useDusun();
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
 
   if (!selectedWisataModal) return null;

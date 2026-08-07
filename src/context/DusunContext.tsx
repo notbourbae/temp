@@ -89,7 +89,7 @@ const emptyDusunInfo: DusunInfo = {
 
 // ─── Cache localStorage untuk data Supabase ──────────
 const DUSUN_CACHE_KEY = 'dusun_data_cache_v1';
-const DUSUN_CACHE_TTL = 5 * 60 * 1000; // 5 menit
+const DUSUN_CACHE_TTL = 30 * 60 * 1000; // 30 menit (Sangat menghemat Egress / kuota bandwidth Supabase)
 
 interface DusunCachePayload {
   savedAt: number;
@@ -209,6 +209,7 @@ interface DusunContextType {
 
   // Supabase integration
   loading: boolean;
+  dataLoadedFrom: 'cache' | 'supabase' | 'fallback' | null;
   refreshFromSupabase: () => Promise<void>;
   saveDusunInfoToSupabaseAction: () => Promise<void>;
 
@@ -223,6 +224,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [activeInfoSubTab, setActiveInfoSubTab] = useState<InfoSubTab>('profil');
 
   const [loading, setLoading] = useState(true);
+  const [dataLoadedFrom, setDataLoadedFrom] = useState<'cache' | 'supabase' | 'fallback' | null>(null);
 
   // Data hanya bersumber dari database Supabase (nilai awal kosong)
   const [dusunInfo, setDusunInfo] = useState<DusunInfo>(emptyDusunInfo);
@@ -280,12 +282,13 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   // ─── Initial load from Supabase ───────────────────
-  const loadFromSupabase = useCallback(async () => {
+  const loadFromSupabase = useCallback(async (force = false) => {
     if (!isSupabaseConfigured || !supabase) {
       // 1) Tampilkan cache lokal dulu agar halaman langsung terisi (instan)
       const { payload } = readDusunCache();
       if (payload) {
         applyAllData(payload);
+        setDataLoadedFrom('cache');
       } else {
         // Fallback ke data awal (mock) jika tidak ada cache
         setDusunInfo(initialDusunInfo);
@@ -299,18 +302,20 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setStatistikProduksi(initialStatistikProduksi);
         setOrganisasiList([]);
         setTokohList(initialTokoh);
+        setDataLoadedFrom('fallback');
       }
       hasLoadedFromSupabase.current = true;
       setLoading(false);
       return;
     }
-    // 1) Tampilkan cache lokal dulu agar halaman langsung terisi (instan)
+    // 1) Tampilkan cache lokal dulu agar halaman langsung terisi (instan) (kecuali force)
     const { payload, fresh } = readDusunCache();
-    if (payload) {
+    if (payload && !force) {
       applyAllData(payload);
+      setDataLoadedFrom('cache');
     }
-    // 2) Jika cache masih fresh, lewati panggilan jaringan
-    if (payload && fresh) {
+    // 2) Jika cache masih fresh, lewati panggilan jaringan (kecuali force)
+    if (payload && fresh && !force) {
       hasLoadedFromSupabase.current = true;
       setLoading(false);
       return;
@@ -322,6 +327,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (data) {
         applyAllData(data);
         writeDusunCache(data);
+        setDataLoadedFrom('supabase');
       } else if (!payload) {
         // Jika data di database kosong / tidak ada, dan tidak ada cache, gunakan fallback
         setDusunInfo(initialDusunInfo);
@@ -335,21 +341,23 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setStatistikProduksi(initialStatistikProduksi);
         setOrganisasiList([]);
         setTokohList(initialTokoh);
+        setDataLoadedFrom('fallback');
       }
     } catch (err) {
       console.warn('Gagal sync dari Supabase:', err);
+      setDataLoadedFrom(payload ? 'cache' : 'fallback');
     } finally {
       setLoading(false);
     }
   }, [applyAllData]);
 
   useEffect(() => {
-    loadFromSupabase();
+    loadFromSupabase(false);
   }, [loadFromSupabase]);
 
   const refreshFromSupabase = useCallback(async () => {
     setLoading(true);
-    await loadFromSupabase();
+    await loadFromSupabase(true); // Memaksa refresh langsung bypass cache
   }, [loadFromSupabase]);
 
   // ─── Manual save dusunInfo to Supabase ────────────
@@ -800,6 +808,7 @@ export const DusunProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showUmkmRegisterModal,
         setShowUmkmRegisterModal,
         loading,
+        dataLoadedFrom,
         refreshFromSupabase,
         saveDusunInfoToSupabaseAction,
         adminNotification,

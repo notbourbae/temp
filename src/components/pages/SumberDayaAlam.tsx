@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDusun } from '../../context/DusunContext';
 import { PotensiSDA } from '../../types';
 import {
@@ -6,15 +6,14 @@ import {
   Sprout,
   Beef,
   Fish,
-  Droplets,
-  Mountain,
-  Pickaxe,
   MapPin,
   CheckCircle2,
   Search,
   X,
   Maximize2,
-  Leaf
+  Leaf,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export const SumberDayaAlam: React.FC = () => {
@@ -22,6 +21,10 @@ export const SumberDayaAlam: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedSdaDetail, setSelectedSdaDetail] = useState<PotensiSDA | null>(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 6;
 
   const categories = [
     { name: 'Semua', icon: <Trees className="w-4 h-4" /> },
@@ -39,6 +42,36 @@ export const SumberDayaAlam: React.FC = () => {
       s.kategori.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   });
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery]);
+
+  // Pagination calculations
+  const totalItems = filteredSDA.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedSDA = filteredSDA.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.getElementById('page-sda')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const getVisiblePages = (current: number, total: number) => {
+    if (total <= 5) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, 4, 5];
+    }
+    if (current >= total - 2) {
+      return [total - 4, total - 3, total - 2, total - 1, total];
+    }
+    return [current - 2, current - 1, current, current + 1, current + 2];
+  };
 
   const getCategoryIcon = (kategori: string) => {
     switch (kategori) {
@@ -87,8 +120,8 @@ export const SumberDayaAlam: React.FC = () => {
                   key={cat.name}
                   onClick={() => setSelectedCategory(cat.name)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${selectedCategory === cat.name
-                      ? 'bg-emerald-800 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-emerald-800 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                 >
                   {cat.icon}
@@ -124,7 +157,7 @@ export const SumberDayaAlam: React.FC = () => {
 
         {/* SDA Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSDA.map((sda) => (
+          {paginatedSDA.map((sda) => (
             <div
               key={sda.id}
               className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all flex flex-col justify-between group"
@@ -186,6 +219,43 @@ export const SumberDayaAlam: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <p className="text-xs text-slate-500 font-medium">
+              Menampilkan <span className="font-semibold text-slate-800">{startIndex + 1}</span> - <span className="font-semibold text-slate-800">{endIndex}</span> dari <span className="font-semibold text-slate-800">{totalItems}</span> Potensi SDA
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {getVisiblePages(currentPage, totalPages).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                      ? 'bg-emerald-800 text-white shadow-sm'
+                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Empty Search State */}
         {filteredSDA.length === 0 && (

@@ -7,7 +7,6 @@ import {
   Compass,
   ArrowRight,
   Newspaper,
-  Phone,
   Trees,
   Quote,
   Building2,

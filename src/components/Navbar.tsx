@@ -11,11 +11,7 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Phone,
-  Mail,
-  MapPin,
   ChevronDown,
-  UserCheck,
   PlusCircle,
   Building2
 } from 'lucide-react';
@@ -27,7 +23,6 @@ export const Navbar: React.FC = () => {
     activeInfoSubTab,
     setActiveInfoSubTab,
     dusunInfo,
-    isAdmin,
     setShowUmkmRegisterModal
   } = useDusun();
 

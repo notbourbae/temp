@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDusun } from '../../context/DusunContext';
 import {
   Landmark,
@@ -8,7 +8,9 @@ import {
   HeartHandshake,
   Hand,
   BookOpen,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const categoryMeta: Record<string, { icon: React.ReactNode; color: string }> = {
@@ -24,6 +26,10 @@ export const Budaya: React.FC = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const ITEMS_PER_PAGE = 6;
 
   const categories = [
     { name: 'Semua', icon: <Sparkles className="w-4 h-4" />, color: 'bg-amber-700 text-white' },
@@ -42,6 +48,36 @@ export const Budaya: React.FC = () => {
       b.kategori.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   });
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery]);
+
+  // Pagination calculations
+  const totalItems = filteredBudaya.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedBudaya = filteredBudaya.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.getElementById('page-budaya')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const getVisiblePages = (current: number, total: number) => {
+    if (total <= 5) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, 4, 5];
+    }
+    if (current >= total - 2) {
+      return [total - 4, total - 3, total - 2, total - 1, total];
+    }
+    return [current - 2, current - 1, current, current + 1, current + 2];
+  };
 
   return (
     <div id="page-budaya" className="space-y-10 animate-in fade-in duration-300">
@@ -82,8 +118,8 @@ export const Budaya: React.FC = () => {
               key={cat.name}
               onClick={() => setSelectedCategory(cat.name)}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${selectedCategory === cat.name
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-slate-900 text-white shadow-md'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
             >
               {cat.icon}
@@ -123,51 +159,90 @@ export const Budaya: React.FC = () => {
             <p className="text-xs text-slate-400 mt-1">Coba ubah kata kunci atau filter kategori</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBudaya.map((item) => {
-              const meta = categoryMeta[item.kategori] || { icon: <Sparkles className="w-4 h-4" />, color: 'bg-slate-600 text-white' };
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => setSelectedBudayaModal(item)}
-                  className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-amber-300 transition-all cursor-pointer flex flex-col"
-                >
-                  <div className="relative h-48 bg-slate-100 overflow-hidden shrink-0">
-                    <img
-                      src={item.gambar}
-                      alt={item.nama}
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                    <span className={`absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs ${meta.color}`}>
-                      {meta.icon}
-                      {item.kategori}
-                    </span>
-                    <span className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${item.status === 'aktif' ? 'bg-emerald-600 text-white' : 'bg-blue-700 text-white'
-                      }`}>
-                      {item.status === 'aktif' ? 'Aktif' : 'Lestari'}
-                    </span>
-                  </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-slate-900 text-sm group-hover:text-amber-700 transition-colors line-clamp-2">
-                        {item.nama}
-                      </h3>
-                      <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
-                        {item.deskripsi}
-                      </p>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedBudaya.map((item) => {
+                const meta = categoryMeta[item.kategori] || { icon: <Sparkles className="w-4 h-4" />, color: 'bg-slate-600 text-white' };
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedBudayaModal(item)}
+                    className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-lg hover:border-amber-300 transition-all cursor-pointer flex flex-col"
+                  >
+                    <div className="relative h-48 bg-slate-100 overflow-hidden shrink-0">
+                      <img
+                        src={item.gambar}
+                        alt={item.nama}
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <span className={`absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs ${meta.color}`}>
+                        {meta.icon}
+                        {item.kategori}
+                      </span>
+                      <span className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${item.status === 'aktif' ? 'bg-emerald-600 text-white' : 'bg-blue-700 text-white'
+                        }`}>
+                        {item.status === 'aktif' ? 'Aktif' : 'Lestari'}
+                      </span>
                     </div>
-                    <div className="pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-400 font-medium">
-                      <Landmark className="w-3 h-3 text-amber-600 shrink-0" />
-                      {item.lokasi}
+                    <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-2">
+                        <h3 className="font-bold text-slate-900 text-sm group-hover:text-amber-700 transition-colors line-clamp-2">
+                          {item.nama}
+                        </h3>
+                        <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
+                          {item.deskripsi}
+                        </p>
+                      </div>
+                      <div className="pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-400 font-medium">
+                        <Landmark className="w-3 h-3 text-amber-600 shrink-0" />
+                        {item.lokasi}
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+                <p className="text-xs text-slate-500 font-medium">
+                  Menampilkan <span className="font-semibold text-slate-800">{startIndex + 1}</span> - <span className="font-semibold text-slate-800">{endIndex}</span> dari <span className="font-semibold text-slate-800">{totalItems}</span> Budaya
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  {getVisiblePages(currentPage, totalPages).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                          ? 'bg-amber-700 text-white shadow-sm'
+                          : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         )}
       </section>
