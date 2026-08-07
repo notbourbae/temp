@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDusun } from '../../context/DusunContext';
-import { X, Calendar, User, Eye, Tag, Share2 } from 'lucide-react';
+import { X, Calendar, Tag, Share2 } from 'lucide-react';
 
 export const BeritaDetailModal: React.FC = () => {
   const { selectedBeritaModal, setSelectedBeritaModal } = useDusun();
@@ -15,7 +15,7 @@ export const BeritaDetailModal: React.FC = () => {
         title: berita.judul,
         text: berita.ringkasan,
         url: window.location.href,
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       alert('Tautan berita berhasil disalin ke papan klip!');
     }
@@ -24,7 +24,7 @@ export const BeritaDetailModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
       <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 max-h-[90vh] flex flex-col my-auto">
-        
+
         {/* Close Button */}
         <button
           onClick={() => setSelectedBeritaModal(null)}
@@ -42,12 +42,11 @@ export const BeritaDetailModal: React.FC = () => {
             className="w-full h-full object-cover opacity-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-          
+
           <div className="absolute bottom-4 left-4 right-4 text-white space-y-2">
-            <span className={`inline-block font-semibold text-[11px] px-2.5 py-0.5 rounded-full ${
-              berita.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950 font-bold' :
-              berita.kategori === 'Agenda' ? 'bg-blue-500 text-white' : 'bg-emerald-600 text-white'
-            }`}>
+            <span className={`inline-block font-semibold text-[11px] px-2.5 py-0.5 rounded-full ${berita.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950 font-bold' :
+                berita.kategori === 'Agenda' ? 'bg-blue-500 text-white' : 'bg-emerald-600 text-white'
+              }`}>
               <Tag className="w-3 h-3 inline mr-1" />
               {berita.kategori}
             </span>
@@ -56,8 +55,6 @@ export const BeritaDetailModal: React.FC = () => {
             </h2>
             <div className="flex items-center gap-4 text-xs text-slate-300 pt-1">
               <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-emerald-400" /> {berita.tanggal}</span>
-              <span className="flex items-center gap-1"><User className="w-3.5 h-3.5 text-emerald-400" /> {berita.penulis}</span>
-              <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5 text-emerald-400" /> {berita.dibaca} kali dibaca</span>
             </div>
           </div>
         </div>

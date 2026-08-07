@@ -70,8 +70,8 @@ const AdminPagination: React.FC<AdminPaginationProps> = ({
             key={page}
             onClick={() => onPageChange(page)}
             className={`w-9 h-9 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center ${currentPage === page
-                ? 'bg-emerald-800 text-white shadow-xs'
-                : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+              ? 'bg-emerald-800 text-white shadow-xs'
+              : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
           >
             {page}
@@ -785,8 +785,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('dashboard')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'dashboard'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <LayoutDashboard className="w-4 h-4 shrink-0" />
@@ -796,8 +796,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('informasi')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'informasi'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Info className="w-4 h-4 shrink-0" />
@@ -807,8 +807,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('struktur')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'struktur'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Building className="w-4 h-4 shrink-0" />
@@ -818,8 +818,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('tokoh')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'tokoh'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Award className="w-4 h-4 shrink-0" />
@@ -829,8 +829,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('berita')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'berita'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Newspaper className="w-4 h-4 shrink-0" />
@@ -840,8 +840,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('umkm')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'umkm'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Store className="w-4 h-4 shrink-0" />
@@ -851,8 +851,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('wisata')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'wisata'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Compass className="w-4 h-4 shrink-0" />
@@ -862,8 +862,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('agenda')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'agenda'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Calendar className="w-4 h-4 shrink-0" />
@@ -873,8 +873,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('sda')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'sda'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Trees className="w-4 h-4 shrink-0" />
@@ -884,8 +884,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('budaya')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'budaya'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Landmark className="w-4 h-4 shrink-0" />
@@ -895,8 +895,8 @@ export const Admin: React.FC = () => {
         <button
           onClick={() => setAdminTab('organisasi')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${adminTab === 'organisasi'
-              ? 'bg-emerald-800 text-white shadow-sm'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-emerald-800 text-white shadow-sm'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
             }`}
         >
           <Users className="w-4 h-4 shrink-0" />
@@ -925,92 +925,7 @@ export const Admin: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            {/* 1. Berita */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-indigo-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Total Berita</span>
-                <div className="p-2 bg-indigo-50 text-indigo-700 rounded-xl">
-                  <Newspaper className="w-4 h-4" />
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-slate-900 leading-none">{beritaList.length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Rilis pengumuman aktif</span>
-              </div>
-            </div>
 
-            {/* 2. Pending UMKM */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-amber-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Pending UMKM</span>
-                <div className="p-2 bg-amber-50 text-amber-700 rounded-xl relative">
-                  <Store className="w-4 h-4" />
-                  {pendingUmkm.length > 0 && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>}
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-amber-600 leading-none">{pendingUmkm.length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Menunggu verifikasi</span>
-              </div>
-            </div>
-
-            {/* 3. Approved UMKM */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-emerald-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">UMKM Disetujui</span>
-                <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl">
-                  <CheckCircle className="w-4 h-4" />
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-emerald-600 leading-none">{umkmList.filter(u => u.status === 'disetujui').length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Sektor UMKM terdaftar</span>
-              </div>
-            </div>
-
-            {/* 4. Wisata */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-blue-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Destinasi Wisata</span>
-                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
-                  <Compass className="w-4 h-4" />
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-blue-600 leading-none">{wisataList.length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Destinasi wisata lokal</span>
-              </div>
-            </div>
-
-            {/* 5. Organisasi */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-teal-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Lembaga/Org</span>
-                <div className="p-2 bg-teal-50 text-teal-700 rounded-xl">
-                  <Users className="w-4 h-4" />
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-teal-600 leading-none">{organisasiList.length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Organisasi aktif</span>
-              </div>
-            </div>
-
-            {/* 6. Tokoh */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200/85 hover:border-violet-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Tokoh Masyarakat</span>
-                <div className="p-2 bg-violet-50 text-violet-700 rounded-xl">
-                  <Award className="w-4 h-4" />
-                </div>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-violet-600 leading-none">{tokohList.length}</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Sejarah & tokoh</span>
-              </div>
-            </div>
-          </div>
 
           {/* Pending UMKM alert section */}
           {pendingUmkm.length > 0 && (

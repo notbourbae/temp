@@ -6,16 +6,11 @@ import {
   MapPin,
   Users,
   Building,
-  Target,
   Newspaper,
-  History,
   Phone,
   Search,
   Calendar,
-  Eye,
-  CheckCircle2,
   ChevronRight,
-  Sparkles,
   Upload,
   Camera,
   Award,
@@ -62,28 +57,6 @@ export const InformasiDusun: React.FC = () => {
         >
           <MapPin className="w-4 h-4" />
           Profil Dusun
-        </button>
-
-        <button
-          onClick={() => setActiveInfoSubTab('sejarah')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'sejarah'
-            ? 'bg-emerald-700 text-white shadow-xs'
-            : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-          <History className="w-4 h-4" />
-          Sejarah Dusun
-        </button>
-
-        <button
-          onClick={() => setActiveInfoSubTab('visi-misi')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${activeInfoSubTab === 'visi-misi'
-            ? 'bg-emerald-700 text-white shadow-xs'
-            : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-          <Target className="w-4 h-4" />
-          Visi dan Misi
         </button>
 
         <button
@@ -148,10 +121,10 @@ export const InformasiDusun: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
                 <p>
-                  <strong>{dusunInfo.namaDusun}</strong> merupakan salah satu wilayah dusun produktif di bawah naungan {dusunInfo.desa}, {dusunInfo.kecamatan}, {dusunInfo.kabupaten}, Provinsi {dusunInfo.provinsi}.
+                  <strong>{dusunInfo.namaDusun}</strong> merupakan salah satu dari tiga dusun utama—bersama Dusun Krajan dan Dusun Swaru—yang berada di bawah naungan pemerintah {dusunInfo.desa}, {dusunInfo.kecamatan}, {dusunInfo.kabupaten}, Provinsi {dusunInfo.provinsi}. Dusun ini terletak di kawasan dataran tinggi lereng kaki Gunung Tengger dengan ketinggian berkisar antara 800 hingga 1.050 meter di atas permukaan laut (mdpl).
                 </p>
                 <p>
-                  Wilayah dusun berada pada bentang alam pegunungan dengan ketinggian rata-rata 850 mdpl, memiliki suhu udara sejuk berkisar 19°C – 26°C. Lahan dusun didominasi oleh persawahan padi irigasi teknis, perkebunan kopi robusta, serta kawasan hutan lindung.
+                  Wilayah timur dusun berbatasan langsung dengan kawasan hutan pelestarian alam Taman Nasional Bromo Tengger Semeru (TNBTS). Bentang alam pegunungan yang mengelilingi dusun ini menciptakan iklim yang sejuk dan asri dengan suhu udara rata-rata harian berkisar antara 18°C hingga 26°C.
                 </p>
 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
@@ -165,15 +138,15 @@ export const InformasiDusun: React.FC = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />
-                      <strong>Sebelah Selatan:</strong> Sungai Utama Cikahuripan & Desa Sindang
+                      <strong>Sebelah Selatan:</strong> Area Aliran Sungai Utama & Area Persawahan
                     </li>
                     <li className="flex items-center gap-2">
                       <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />
-                      <strong>Sebelah Timur:</strong> Area Persawahan Blok Sukarasa
+                      <strong>Sebelah Timur:</strong> Taman Nasional Bromo Tengger Semeru (TNBTS)
                     </li>
                     <li className="flex items-center gap-2">
                       <ChevronRight className="w-3.5 h-3.5 text-emerald-600" />
-                      <strong>Sebelah Barat:</strong> Dusun Mekar Jaya
+                      <strong>Sebelah Barat:</strong> Dusun Krajan / Area Perkebunan
                     </li>
                   </ul>
                 </div>
@@ -220,86 +193,6 @@ export const InformasiDusun: React.FC = () => {
                     <p className="text-[11px] text-emerald-700">Kepala Keluarga (KK)</p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUBTAB 2: SEJARAH DUSUN */}
-      {activeInfoSubTab === 'sejarah' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-                <History className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Sejarah & Asal-Usul Dusun</h2>
-                <p className="text-xs text-slate-500">Perjalanan Panjang Berdirinya {dusunInfo.namaDusun}</p>
-              </div>
-            </div>
-
-            <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
-              <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 text-amber-950">
-                <p className="font-semibold mb-1">Pendiri Utama: {dusunInfo.sejarah.pendiri} (Tahun {dusunInfo.sejarah.tahunBerdiri})</p>
-                <p className="text-slate-700">{dusunInfo.sejarah.cerita}</p>
-              </div>
-
-              <h3 className="font-bold text-slate-900 text-base pt-4">Linimasa Sejarah & Peristiwa Penting</h3>
-
-              <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-emerald-200 pl-8">
-                {dusunInfo.sejarah.milestone.map((m, idx) => (
-                  <div key={idx} className="relative space-y-1">
-                    <div className="absolute -left-8 top-1.5 w-3.5 h-3.5 rounded-full bg-emerald-600 border-2 border-white shadow-xs"></div>
-                    <span className="inline-block bg-emerald-100 text-emerald-800 font-bold text-[11px] px-2 py-0.5 rounded-md">
-                      Tahun {m.tahun}
-                    </span>
-                    <p className="text-slate-800 text-xs sm:text-sm font-medium">{m.peristiwa}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUBTAB 3: VISI DAN MISI */}
-      {activeInfoSubTab === 'visi-misi' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-8">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
-                <Target className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Visi & Misi Pembangunan Dusun</h2>
-                <p className="text-xs text-slate-500">Arah Kebijakan dan Target Dusun Periode 2025–2030</p>
-              </div>
-            </div>
-
-            {/* Visi Box */}
-            <div className="bg-gradient-to-r from-emerald-900 to-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-md space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4" /> Visi Utama Dusun
-              </div>
-              <p className="text-base sm:text-xl font-bold leading-relaxed text-emerald-100 italic">
-                "{dusunInfo.visi}"
-              </p>
-            </div>
-
-            {/* Misi Box */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-slate-900">5 Misi Utama Dusun Sukamaju</h3>
-              <div className="grid grid-cols-1 gap-3">
-                {dusunInfo.misi.map((m, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                      {idx + 1}
-                    </div>
-                    <p className="text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">{m}</p>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -479,8 +372,7 @@ export const InformasiDusun: React.FC = () => {
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
                   <div>
                     <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium mb-1">
-                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-emerald-600" /> {item.tanggal}</span>
-                      <span className="flex items-center gap-1"><Eye className="w-3 h-3 text-slate-400" /> {item.dibaca}x</span>
+                      <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-emerald-600" /> {item.tanggal}</span>
                     </div>
                     <h3 className="font-bold text-slate-900 text-sm line-clamp-2 hover:text-emerald-700 transition-colors">
                       {item.judul}

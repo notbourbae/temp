@@ -55,9 +55,6 @@ export const Navbar: React.FC = () => {
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight group-hover:text-emerald-700 transition-colors">
                 {dusunInfo.namaDusun}
               </h1>
-              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                PORTAL RESMI
-              </span>
             </div>
             <p className="text-xs text-slate-500 hidden sm:block">
               {dusunInfo.slogan}
@@ -127,24 +124,6 @@ export const Navbar: React.FC = () => {
                         }`}
                     >
                       • Profil Dusun
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('informasi', 'sejarah')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'sejarah'
-                        ? 'bg-emerald-50 text-emerald-700 font-bold'
-                        : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                    >
-                      • Sejarah Dusun
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('informasi', 'visi-misi')}
-                      className={`w-full text-left px-4 py-2 text-xs font-medium transition-colors ${activeTab === 'informasi' && activeInfoSubTab === 'visi-misi'
-                        ? 'bg-emerald-50 text-emerald-700 font-bold'
-                        : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                    >
-                      • Visi dan Misi
                     </button>
                     <button
                       onClick={() => handleNavClick('informasi', 'struktur')}
@@ -291,18 +270,6 @@ export const Navbar: React.FC = () => {
               className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
             >
               • Profil Dusun
-            </button>
-            <button
-              onClick={() => handleNavClick('informasi', 'sejarah')}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
-            >
-              • Sejarah Dusun
-            </button>
-            <button
-              onClick={() => handleNavClick('informasi', 'visi-misi')}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-emerald-50 rounded-md"
-            >
-              • Visi dan Misi
             </button>
             <button
               onClick={() => handleNavClick('informasi', 'struktur')}

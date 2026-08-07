@@ -4,7 +4,6 @@ import { WisataCategory } from '../../types';
 import {
   Compass,
   Trees,
-  Landmark,
   GraduationCap,
   UtensilsCrossed,
   Search,

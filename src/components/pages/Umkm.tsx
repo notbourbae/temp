@@ -7,7 +7,6 @@ import {
   PlusCircle,
   Phone,
   MapPin,
-  Tag,
   Utensils,
   Palette,
   Sprout,

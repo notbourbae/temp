@@ -58,7 +58,7 @@ export const Home: React.FC = () => {
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
-            Portal Informasi, UMKM, Wisata & Potensi Alam Dusun
+            Website Informasi, UMKM, Wisata & Potensi Alam Dusun
           </h1>
 
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
@@ -184,14 +184,6 @@ export const Home: React.FC = () => {
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
               {dusunInfo.sambutanIsi}
             </p>
-            <div className="pt-2">
-              <button
-                onClick={() => { setActiveTab('informasi'); setActiveInfoSubTab('visi-misi'); }}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 underline cursor-pointer"
-              >
-                Lihat Visi & Misi Pembangunan Dusun →
-              </button>
-            </div>
           </div>
         </div>
       </section>
