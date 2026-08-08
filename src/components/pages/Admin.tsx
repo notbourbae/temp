@@ -1429,7 +1429,7 @@ export const Admin: React.FC = () => {
                     <div className="flex flex-col items-center text-center space-y-2">
                       <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-emerald-600 shadow-xs shrink-0">
                         <img
-                          src={p.foto}
+                          src={p.foto || null}
                           alt={p.nama}
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover"
@@ -2821,7 +2821,7 @@ export const Admin: React.FC = () => {
                   <div key={item.id} className="bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-between shadow-xs">
                     <div className="relative h-40 bg-slate-200 overflow-hidden">
                       <img
-                        src={item.gambar}
+                        src={item.gambar || null}
                         alt={item.nama}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover"

@@ -168,7 +168,7 @@ export const SumberDayaAlam: React.FC = () => {
                 className="relative h-48 bg-slate-900 overflow-hidden cursor-pointer shrink-0"
               >
                 <img
-                  src={sda.gambar}
+                  src={sda.gambar || null}
                   alt={sda.nama}
                   referrerPolicy="no-referrer"
                   loading="lazy"
@@ -239,8 +239,8 @@ export const SumberDayaAlam: React.FC = () => {
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
-                      ? 'bg-emerald-800 text-white shadow-sm'
-                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    ? 'bg-emerald-800 text-white shadow-sm'
+                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                 >
                   {page}
@@ -274,7 +274,7 @@ export const SumberDayaAlam: React.FC = () => {
             {/* Modal Header Image */}
             <div className="relative h-60 bg-slate-900 shrink-0">
               <img
-                src={selectedSdaDetail.gambar}
+                src={selectedSdaDetail.gambar || null}
                 alt={selectedSdaDetail.nama}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"

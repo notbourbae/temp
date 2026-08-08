@@ -99,8 +99,8 @@ export const Wisata: React.FC = () => {
               key={cat.name}
               onClick={() => setSelectedCategory(cat.name)}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${selectedCategory === cat.name
-                  ? 'bg-teal-700 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-teal-700 text-white shadow-md'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
             >
               {cat.icon}
@@ -138,7 +138,7 @@ export const Wisata: React.FC = () => {
               className="relative h-52 bg-slate-900 overflow-hidden cursor-pointer shrink-0"
             >
               <img
-                src={w.gambar}
+                src={w.gambar || null}
                 alt={w.nama}
                 referrerPolicy="no-referrer"
                 loading="lazy"
@@ -203,8 +203,8 @@ export const Wisata: React.FC = () => {
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
-                    ? 'bg-teal-700 text-white shadow-sm'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                  ? 'bg-teal-700 text-white shadow-sm'
+                  : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                   }`}
               >
                 {page}

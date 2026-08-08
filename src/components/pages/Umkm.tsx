@@ -222,8 +222,8 @@ export const Umkm: React.FC = () => {
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
-                    ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                  ? 'bg-emerald-700 text-white shadow-sm'
+                  : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                   }`}
               >
                 {page}

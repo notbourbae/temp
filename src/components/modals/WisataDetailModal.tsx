@@ -26,7 +26,7 @@ export const WisataDetailModal: React.FC = () => {
         {/* Hero Image & Gallery */}
         <div className="relative h-64 sm:h-80 bg-slate-900 shrink-0">
           <img
-            src={currentPhoto}
+            src={currentPhoto || null}
             alt={wisata.nama}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover transition-all duration-300"
@@ -51,7 +51,7 @@ export const WisataDetailModal: React.FC = () => {
               className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentPhoto === wisata.gambar ? 'border-teal-400 scale-105' : 'border-transparent opacity-70'
                 }`}
             >
-              <img src={wisata.gambar} alt="Thumbnail Utm" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <img src={wisata.gambar || null} alt="Thumbnail Utm" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </button>
             {wisata.fotoLain.map((img, idx) => (
               <button
@@ -60,7 +60,7 @@ export const WisataDetailModal: React.FC = () => {
                 className={`relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentPhoto === img ? 'border-teal-400 scale-105' : 'border-transparent opacity-70'
                   }`}
               >
-                <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={img || null} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </button>
             ))}
           </div>

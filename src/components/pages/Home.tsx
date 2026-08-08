@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Newspaper,
   Trees,
-  Quote,
   Building2,
   Calendar,
   Landmark,
@@ -25,16 +24,12 @@ export const Home: React.FC = () => {
     budayaList,
     setActiveTab,
     setActiveInfoSubTab,
-    setSelectedUmkmModal,
-    setSelectedWisataModal,
     setSelectedBeritaModal,
     setShowUmkmRegisterModal
   } = useDusun();
 
   const approvedUmkm = umkmList.filter(u => u.status === 'disetujui');
   const featuredBerita = beritaList.slice(0, 3);
-  const featuredUmkm = approvedUmkm.slice(0, 3);
-  const featuredWisata = wisataList.slice(0, 3);
 
   return (
     <div id="page-home" className="space-y-16 animate-in fade-in duration-300">
@@ -177,7 +172,6 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="md:col-span-2 space-y-4">
-            <Quote className="w-10 h-10 text-emerald-500 opacity-60" />
             <h2 className="text-xl sm:text-2xl font-bold text-emerald-100 leading-snug">
               "{dusunInfo.sambutanJudul}"
             </h2>
@@ -248,114 +242,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* UMKM Unggulan Section */}
-      <section className="space-y-6 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200/80">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
-          <div>
-            <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider">
-              <Store className="w-4 h-4" /> Ekonomi Lokal
-            </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mt-1">Produk UMKM Unggulan Dusun</h2>
-          </div>
-          <button
-            onClick={() => setActiveTab('umkm')}
-            className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-bold text-xs cursor-pointer"
-          >
-            Lihat Semua UMKM ({approvedUmkm.length}) <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredUmkm.map((u) => (
-            <div
-              key={u.id}
-              onClick={() => setSelectedUmkmModal(u)}
-              className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-lg transition-all cursor-pointer flex flex-col"
-            >
-              <div className="relative h-48 bg-slate-100 overflow-hidden shrink-0">
-                <img
-                  src={u.gambar}
-                  alt={u.namaUsaha}
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-                <span className="absolute top-3 left-3 bg-emerald-700 text-white font-semibold text-[10px] px-2.5 py-0.5 rounded-full">
-                  {u.kategori}
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-bold text-slate-900 text-base">{u.namaUsaha}</h3>
-                  <p className="text-xs text-slate-500 font-medium">Pemilik: {u.pemilik}</p>
-                  <p className="text-xs text-slate-600 line-clamp-2">{u.deskripsi}</p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400 font-medium">{u.produk.length} Produk Katalog</span>
-                  <button className="bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">
-                    Lihat Detail & Beli
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Wisata Pilihan Section */}
-      <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
-          <div>
-            <div className="flex items-center gap-2 text-teal-700 font-bold text-xs uppercase tracking-wider">
-              <Compass className="w-4 h-4" /> Pesona Ekowisata
-            </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mt-1">Destinasi Wisata Pilihan</h2>
-          </div>
-          <button
-            onClick={() => setActiveTab('wisata')}
-            className="inline-flex items-center gap-1 text-teal-700 hover:text-teal-800 font-bold text-xs cursor-pointer"
-          >
-            Lihat Semua Destinasi <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredWisata.map((w) => (
-            <div
-              key={w.id}
-              onClick={() => setSelectedWisataModal(w)}
-              className="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-lg transition-all cursor-pointer flex flex-col"
-            >
-              <div className="relative h-48 bg-slate-900 overflow-hidden shrink-0">
-                <img
-                  src={w.gambar}
-                  alt={w.nama}
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <span className="absolute top-3 left-3 bg-teal-700 text-white font-semibold text-[10px] px-2.5 py-0.5 rounded-full">
-                  {w.kategori}
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                    {w.nama}
-                  </h3>
-                  <p className="text-xs text-slate-600 line-clamp-2">{w.deskripsi}</p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-teal-800">{w.hargaTiket}</span>
-                  <span className="text-slate-400 font-medium">Buka: {w.jamOperasional.split('(')[0]}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* KALENDER KEGIATAN WISATA & FESTIVAL */}
       <section className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl border border-slate-800">

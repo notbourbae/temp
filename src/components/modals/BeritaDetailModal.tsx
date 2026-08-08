@@ -36,7 +36,7 @@ export const BeritaDetailModal: React.FC = () => {
         {/* Modal Header */}
         <div className="relative h-56 sm:h-72 bg-slate-900 shrink-0">
           <img
-            src={berita.gambar}
+            src={berita.gambar || null}
             alt={berita.judul}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover opacity-90"
@@ -45,7 +45,7 @@ export const BeritaDetailModal: React.FC = () => {
 
           <div className="absolute bottom-4 left-4 right-4 text-white space-y-2">
             <span className={`inline-block font-semibold text-[11px] px-2.5 py-0.5 rounded-full ${berita.kategori === 'Pengumuman' ? 'bg-amber-500 text-slate-950 font-bold' :
-                berita.kategori === 'Agenda' ? 'bg-blue-500 text-white' : 'bg-emerald-600 text-white'
+              berita.kategori === 'Agenda' ? 'bg-blue-500 text-white' : 'bg-emerald-600 text-white'
               }`}>
               <Tag className="w-3 h-3 inline mr-1" />
               {berita.kategori}

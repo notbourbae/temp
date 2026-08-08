@@ -23,7 +23,7 @@ export const BudayaDetailModal: React.FC = () => {
         {/* Modal Header */}
         <div className="relative h-56 sm:h-72 bg-slate-900 shrink-0">
           <img
-            src={budaya.gambar}
+            src={budaya.gambar || null}
             alt={budaya.nama}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover opacity-90"
@@ -36,9 +36,8 @@ export const BudayaDetailModal: React.FC = () => {
                 <Tag className="w-3 h-3" />
                 {budaya.kategori}
               </span>
-              <span className={`inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
-                budaya.status === 'aktif' ? 'bg-emerald-600 text-white' : 'bg-blue-700 text-white'
-              }`}>
+              <span className={`inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full ${budaya.status === 'aktif' ? 'bg-emerald-600 text-white' : 'bg-blue-700 text-white'
+                }`}>
                 {budaya.status === 'aktif' ? 'Aktif' : 'Lestari'}
               </span>
             </div>
