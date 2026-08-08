@@ -242,10 +242,6 @@ export const Navbar: React.FC = () => {
               </button>
             </li>
           </ul>
-
-          <div className="text-xs text-slate-500 font-medium">
-            Hari ini: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-          </div>
         </div>
       </nav>
 
